@@ -4,7 +4,7 @@
 
 ## Zotero 到证据卡 Skill
 
-仓库包含可安装的 [`hydrology-evidence-cards`](skills/hydrology-evidence-cards/SKILL.md) Skill。它从本机 Zotero 只读获取指定来源和可用全文，按原文生成八类可追溯证据卡。八个在Obsidian中直接可见的独立Markdown位于[证据卡模板](docs/证据卡模板)，使用入口见[八类独立模板与 Zotero Skill 使用 V1.0](docs/证据卡规范/07_八类独立模板与Zotero_Skill使用_V1.0.md)。
+仓库包含可安装的 [`hydrology-evidence-cards`](skills/hydrology-evidence-cards/SKILL.md) Skill。它从本机 Zotero 只读获取指定来源和可用全文，按原文生成八类可追溯证据卡，围绕问题、证据生成机制、决定性声明、推断边界和研究决策组织。八个在Obsidian中直接可见的独立Markdown位于[证据卡模板](docs/证据卡模板)，使用入口见[证据卡科学架构与 Zotero Skill 使用 V1.1](docs/证据卡规范/07_证据卡科学架构与Zotero_Skill使用_V1.1.md)。
 
 ## 从这里开始
 

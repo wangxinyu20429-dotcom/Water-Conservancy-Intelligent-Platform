@@ -56,6 +56,9 @@ def main() -> None:
     p.add_argument("--title")
     p.add_argument("--zotero-key")
     p.add_argument("--card-id")
+    p.add_argument("--source-version")
+    p.add_argument("--research-question")
+    p.add_argument("--intended-decision")
     p.add_argument("--output")
     p.add_argument("--overwrite", action="store_true")
     args = p.parse_args()
@@ -75,7 +78,12 @@ def main() -> None:
         "{{DOI}}": str(data.get("DOI") or "未填写"),
         "{{URL}}": str(data.get("url") or "未填写"),
         "{{CREATED_AT}}": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
+        "{{SOURCE_VERSION}}": args.source_version or "待核对",
+        "{{INTENDED_DECISION}}": args.intended_decision or "待填写",
     }
+    question = args.research_question or "待填写"
+    for token in ["{{RESEARCH_QUESTION}}", "{{REVIEW_QUESTION}}", "{{STATISTICAL_QUESTION}}", "{{ENGINEERING_QUESTION}}", "{{QUESTION}}", "{{NORMATIVE_QUESTION}}", "{{DATA_QUESTION}}", "{{SOFTWARE_QUESTION}}", "{{CARD_QUESTION}}"]:
+        replacements[token] = question
     for old, new in replacements.items():
         text = text.replace(old, new)
     output = Path(args.output or f"{card_id}_{safe_filename(title)}.md").expanduser().resolve()
@@ -88,4 +96,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -1,17 +1,17 @@
 # 八类独立证据卡模板与 Zotero Skill 使用 V1.0
 
-2026-09-04。本文件是使用入口；八类模板的正式可复制版本位于仓库 `skills/hydrology-evidence-cards/assets/templates/`。每种来源一个独立 Markdown，不再从总说明中手工拼装。
+2026-09-04。本文件是使用入口。Obsidian中直接使用的八个完整模板位于 `docs/证据卡模板/`，每种来源一个独立 Markdown；Skill安装包内的同内容副本位于 `skills/hydrology-evidence-cards/assets/templates/`。
 
 ## 八个独立模板
 
-1. [原创研究](../../skills/hydrology-evidence-cards/assets/templates/01_original-research.md)
-2. [综述与证据综合](../../skills/hydrology-evidence-cards/assets/templates/02_review-synthesis.md)
-3. [调查、监测与统计报告](../../skills/hydrology-evidence-cards/assets/templates/03_survey-monitoring-statistics.md)
-4. [工程项目报告](../../skills/hydrology-evidence-cards/assets/templates/04_engineering-report.md)
-5. [图书与章节](../../skills/hydrology-evidence-cards/assets/templates/05_book-chapter.md)
-6. [标准、指南与政策](../../skills/hydrology-evidence-cards/assets/templates/06_standard-guideline-policy.md)
-7. [数据集及数据产品](../../skills/hydrology-evidence-cards/assets/templates/07_dataset-data-product.md)
-8. [软件、模型与代码](../../skills/hydrology-evidence-cards/assets/templates/08_software-model-code.md)
+1. [原创研究](../证据卡模板/01_原创研究证据卡模板.md)
+2. [综述与证据综合](../证据卡模板/02_综述与证据综合证据卡模板.md)
+3. [调查、监测与统计报告](../证据卡模板/03_调查监测与统计报告证据卡模板.md)
+4. [工程项目报告](../证据卡模板/04_工程项目报告证据卡模板.md)
+5. [图书与章节](../证据卡模板/05_图书与章节证据卡模板.md)
+6. [标准、指南与政策](../证据卡模板/06_标准指南与政策证据卡模板.md)
+7. [数据集及数据产品](../证据卡模板/07_数据集及数据产品证据卡模板.md)
+8. [软件、模型与代码](../证据卡模板/08_软件模型与代码证据卡模板.md)
 
 每个文件都能单独复制使用，并完整包含公共字段、类型专属字段、声明—原文定位、使用边界和复查记录。`01_八类证据卡分类与填写说明_V0.4.md`继续解释分类原理；本文件负责进入可执行模板。
 

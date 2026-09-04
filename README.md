@@ -4,7 +4,7 @@
 
 ## Zotero 到证据卡 Skill
 
-仓库包含可安装的 [`hydrology-evidence-cards`](skills/hydrology-evidence-cards/SKILL.md) Skill。它从本机 Zotero 只读获取指定来源和可用全文，按原文生成八类可追溯证据卡。八个独立模板与使用入口见[八类独立模板与 Zotero Skill 使用 V1.0](docs/证据卡规范/07_八类独立模板与Zotero_Skill使用_V1.0.md)。
+仓库包含可安装的 [`hydrology-evidence-cards`](skills/hydrology-evidence-cards/SKILL.md) Skill。它从本机 Zotero 只读获取指定来源和可用全文，按原文生成八类可追溯证据卡。八个在Obsidian中直接可见的独立Markdown位于[证据卡模板](docs/证据卡模板)，使用入口见[八类独立模板与 Zotero Skill 使用 V1.0](docs/证据卡规范/07_八类独立模板与Zotero_Skill使用_V1.0.md)。
 
 ## 从这里开始
 
@@ -27,7 +27,8 @@ GitHub不保存项目原始数据、文献全文、Zotero数据库、凭据或�
 ## 文档结构
 
 - [产品与流程](docs/产品与流程)：产品说明、操作手册、入口记录、填写模板、任务顺序和验收。
-- [证据卡规范](docs/证据卡规范)：八类材料说明、八个独立模板、Zotero Skill、原文忠实性和质量检查。
+- [证据卡模板](docs/证据卡模板)：八类来源各一个完整Markdown模板。
+- [证据卡规范](docs/证据卡规范)：分类说明、Zotero Skill、原文忠实性和质量检查。
 - [可安装 Skills](skills)：供其他成员复制接入的可执行科研工作流。
 - [图与形成依据](docs/图与形成依据)：可编辑实体架构图及预览图。
 - [迁移说明](MIGRATION.md)：旧Project内容与本仓库的对应关系。

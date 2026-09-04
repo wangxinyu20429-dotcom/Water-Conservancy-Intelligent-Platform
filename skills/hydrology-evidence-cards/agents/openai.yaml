@@ -1,0 +1,7 @@
+interface:
+  display_name: "水利科研证据卡"
+  short_description: "从 Zotero 原文生成可定位、可复核的八类证据卡"
+  brand_color: "#176B87"
+  default_prompt: "Use $hydrology-evidence-cards to read a selected Zotero source and create a source-grounded Markdown evidence card."
+policy:
+  allow_implicit_invocation: true

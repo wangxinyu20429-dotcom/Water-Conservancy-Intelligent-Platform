@@ -1,0 +1,13 @@
+.obsidian/
+.zotero-cache/
+zotero-packet/
+fulltext_*.txt
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.zip
+__pycache__/
+*.pyc
+

@@ -4,7 +4,7 @@
 
 ## Zotero 到证据卡 Skill
 
-仓库包含可安装的 [`hydrology-evidence-cards`](skills/hydrology-evidence-cards/SKILL.md) Skill。它从本机 Zotero 只读获取指定来源和可用全文，按原文生成八类可追溯证据卡。八个在Obsidian中直接可见的独立Markdown位于[证据卡模板](docs/证据卡模板)，使用入口见[八类独立模板与 Zotero Skill 使用 V1.0](docs/证据卡规范/07_八类独立模板与Zotero_Skill使用_V1.0.md)。
+仓库包含可安装的 [`hydrology-evidence-cards`](skills/hydrology-evidence-cards/SKILL.md) Skill。它从本机 Zotero 只读取得指定来源和可用全文，按 Source—Claim—Decision 三层建立证据：来源版本只登记一次，Cxx 声明带全局 ID 和原文定位，平台判断写入第九张决策卡。Skill 支持 L0—L3、八类来源入口、公共水利情境、五类方法模块、AI 溯源、R01—R08 校验和关系图导出。使用入口见[证据卡科学架构与 Zotero Skill 使用 V1.2](docs/证据卡规范/07_证据卡科学架构与Zotero_Skill使用_V1.2.md)。
 
 ## 从这里开始
 
@@ -27,8 +27,9 @@ GitHub不保存项目原始数据、文献全文、Zotero数据库、凭据或�
 ## 文档结构
 
 - [产品与流程](docs/产品与流程)：产品说明、操作手册、入口记录、填写模板、任务顺序和验收。
-- [证据卡模板](docs/证据卡模板)：八类来源各一个完整Markdown模板。
-- [证据卡规范](docs/证据卡规范)：分类说明、Zotero Skill、原文忠实性和质量检查。
+- [证据卡模板](docs/证据卡模板)：公共骨架、八类独立来源入口和第九张平台综合决策卡；Skill 装配后每个来源仍输出一个独立 Markdown。
+- [证据卡模块](docs/证据卡模块)：公共水利情境及预测、模拟、频率气候、监测遥感、工程安全方法模块。
+- [证据卡规范](docs/证据卡规范)：V1.2 科学架构、外部实践对照、原文忠实性和质量检查。
 - [可安装 Skills](skills)：供其他成员复制接入的可执行科研工作流。
 - [图与形成依据](docs/图与形成依据)：可编辑实体架构图及预览图。
 - [迁移说明](MIGRATION.md)：旧Project内容与本仓库的对应关系。
@@ -39,8 +40,8 @@ GitHub不保存项目原始数据、文献全文、Zotero数据库、凭据或�
 | --- | --- | --- |
 | [T01](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/1) | 建立OneDrive目录并确认Zotero、Obsidian与GitHub入口 | M0 |
 | [T02](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/2) | 把一份真实材料收进Zotero并登记文献链接 | M0 |
-| [T03](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/3) | 按材料类型填写证据卡，并逐条对照原文复查 | M1 |
-| [T04](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/4) | 把证据卡用于具体主题，写清比较条件和认识变化 | M1 |
+| [T03](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/3) | 为唯一来源版本建立真实 L0—L3 卡、Cxx 定位、人审和 R01—R08 结果 | M1 |
+| [T04](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/4) | 用平台决策卡综合 claim_id，再把有边界的认识写入主题 | M1 |
 | [T05](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/5) | 回答实际研究问题，缺证据时安排有目标的补读 | M1 |
 | [T06](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/6) | 在主题中记录创新点候选、依据和下一项验证 | M1 |
 | [T07](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/7) | 将Obsidian知识文件同步到集体GitHub并检查链接 | M1 |

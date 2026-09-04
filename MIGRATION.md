@@ -24,3 +24,19 @@
 迁移以当前有效版本为入口：产品与操作步骤使用V0.5，证据卡分类使用V0.4，原创论文细读和忠实性规则继续使用V0.3。旧版本不在目标仓库并列作为执行入口，所需演变信息由Git历史和本说明保留。
 
 旧Project和旧Issue未删除；删除会破坏历史链接，须另行决定。新工作从本仓库开始。
+
+## 新任务编号
+
+| 旧任务 | 新任务 |
+| --- | --- |
+| iHeadWater/mylibrary#10 | [T01](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/1) |
+| iHeadWater/mylibrary#11 | [T02](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/2) |
+| iHeadWater/mylibrary#12 | [T03](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/3) |
+| iHeadWater/mylibrary#13 | [T04](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/4) |
+| iHeadWater/mylibrary#14 | [T05](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/5) |
+| iHeadWater/mylibrary#15 | [T06](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/6) |
+| iHeadWater/mylibrary#16 | [T07](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/7) |
+| iHeadWater/mylibrary#17 | [T08](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/8) |
+| iHeadWater/mylibrary#18 | [T09](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/9) |
+
+新仓库里程碑：[M0](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/milestone/1)、[M1](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/milestone/2)、[M2](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/milestone/3)。

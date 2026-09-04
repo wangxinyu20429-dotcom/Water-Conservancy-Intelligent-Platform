@@ -27,6 +27,22 @@ GitHub不保存项目原始数据、文献全文、Zotero数据库、凭据或�
 - [图与形成依据](docs/图与形成依据)：可编辑实体架构图及预览图。
 - [迁移说明](MIGRATION.md)：旧Project内容与本仓库的对应关系。
 
+## 当前任务
+
+| 任务 | 内容 | 里程碑 |
+| --- | --- | --- |
+| [T01](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/1) | 建立OneDrive目录并确认Zotero、Obsidian与GitHub入口 | M0 |
+| [T02](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/2) | 把一份真实材料收进Zotero并登记文献链接 | M0 |
+| [T03](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/3) | 按材料类型填写证据卡，并逐条对照原文复查 | M1 |
+| [T04](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/4) | 把证据卡用于具体主题，写清比较条件和认识变化 | M1 |
+| [T05](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/5) | 回答实际研究问题，缺证据时安排有目标的补读 | M1 |
+| [T06](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/6) | 在主题中记录创新点候选、依据和下一项验证 | M1 |
+| [T07](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/7) | 将Obsidian知识文件同步到集体GitHub并检查链接 | M1 |
+| [T08](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/8) | 用真实材料检查整条流程并记录未通过的环节 | M1 |
+| [T09](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/9) | 修复真实发现的问题，并回到出错步骤复验 | M2 |
+
+里程碑：[M0](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/milestone/1) · [M1](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/milestone/2) · [M2](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/milestone/3)
+
 ## 当前状态
 
 V0.5文档和任务定义已经迁入本仓库。实际OneDrive目录、真实项目、共享权限、Zotero集合和第一份材料仍须从T01开始执行；迁移文档不改变任务完成状态。

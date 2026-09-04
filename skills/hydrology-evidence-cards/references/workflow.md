@@ -1,86 +1,67 @@
-# 证据卡执行工作流 V1.1
+# Zotero to Source-Claim-Decision workflow V1.2
 
-## 1. 先固定要改变的判断
+## 1. Bind the request
 
-写一句当前问题和一句预定决定。问题必须能被证据改变，例如“该模型是否证明对空间独立的无资料流域有效”，不能只写“了解洪水预测”。如果没有具体问题，只建立来源身份记录，不生成看似完整的证据结论。
+Record the user-specified Zotero item key or collection, current research question, intended decision, allowed output location and batch boundary. Do not broaden the literature set.
 
-## 2. 查重、锁定身份和版本
+## 2. Establish source identity
 
-按 DOI、ISBN、标准号、报告号、数据 DOI、仓库地址和 Zotero item key 搜索目标库。已有同一来源时更新原卡。核对 Zotero 题录、实际文件首页和官方发布页；预印本、出版版、修订版、数据版本和代码版本分别记录关系。
+Use Zotero read-only metadata and the official identifier or source when available. Assign source_work_id and source_manifestation_id. Check whether the same manifestation already has a card before creating one. Record acquisition channel separately from provenance.
 
-高影响判断先检查勘误、撤稿、关注声明、取代和版本更新。无法确认版本时，使用结论不得高于“限条件使用”或“暂不可用”。
+## 3. Select level
 
-## 3. 建立阅读覆盖地图
+- L0 for identity and deduplication.
+- L1 for whether continued reading is justified.
+- L2 when a located, source-checked claim is needed for a live question.
+- L3 only after the three dynamic-reading gates pass.
 
-逐项登记主文、附录、补充材料、数据说明、代码、标准附件、变更记录和勘误：
+Start at the least expensive level that answers the current decision. Do not fill empty fields merely because a template contains them.
 
-- 已取得且已阅读；
-- 已取得但未阅读；
-- 未取得；
-- 无法辨认；
-- 与本问题不适用。
+## 4. Choose profile, roles and modules
 
-全文索引存在不等于全文和图表均已核。扫描 OCR 的公式、负号、表头和脚注必须回到原页。
+Choose one source profile. Add all evidence roles that matter. Add the common water-context module when a specific water setting matters and every method module carrying a decisive assumption.
 
-## 4. 还原证据生成机制
+Example:
 
-根据来源类型回答“这个事实怎样被产生”：
+    python scripts/new_card.py --type original-research --level L2 --card-id EC-20260904-001 --title Example --manifestation-id SRC-2026-0042-V1 --source-work-id WORK-2026-0042 --source-version published-v1 --zotero-item-key ABCD1234 --research-question-id RQ-001 --role original_research --role software_validation --module hydro-forecast-ml --water-context --output EC-20260904-001_Example.md
 
-- 原创研究：问题、推断目标、独立单位、数据和信息路径、比较、验证；
-- 综述：检索宇宙、筛选、证据单位、偏倚、综合、异质性和重叠；
-- 调查统计：总体、框架、测量、分母、权重、不确定性、修订；
-- 工程报告：阶段、证据层、边界、判据、模拟／试验／实测／运行；
-- 图书：命题、定义、推导、来源谱系、版本和适用域；
-- 标准政策：效力、范围、规范词、条款、例外、符合性；
-- 数据：生成、语义、覆盖、质量、版本束、许可和适用性；
-- 软件：固定制品、模型—实现关系、输入输出、验证、运行状态和版本漂移。
+## 5. Read only what supports the current level
 
-只展开会改变当前解释的分支，不把整份来源改写成字段百科。
+For L0, use identity records. For L1, read the abstract or executive material and label it honestly. For L2, open the exact pages, tables, figures, clauses, rows, metadata or logs needed for each decisive claim. For L3, follow the stated minimum path through methods, supplements, data, code, versions or runs and stop at the predeclared condition.
 
-## 5. 建立决定性 Cxx 声明
+## 6. Write claims
 
-每个 Cxx 只表达一个命题。先写来源事实，再写证据来源、效应或阈值、精确范围、定位和上下文；随后写直接支持、不能支持、来源解释、本方判断、冲突、依赖和核查状态。
+Create one claim-json block per proposition. Use a globally unique claim_id. Record source fact, evidence origin, exact scope, locator, permitted inference, support, non-support, interpretations, relations, independence groups and verification. Add the method_requirements demanded by the inference type.
 
-只有直接核过的原文、图表、条款、数据组件、代码或运行日志才能写“直接来源已复核”。综述或教材的二次转述不能冒充原研究核验。共享同一报告、数据或发布链的材料使用同一依赖组，不重复计证。
+Do not cap the complete record at three claims. Only the quick decision summary is limited to the most decision-relevant three.
 
-快速判断层最多突出三项 Cxx 和两项最大边界；其余信息留在完整层。
+## 7. Validate and review
 
-## 6. 审查有效性和反例
+During drafting:
 
-只记录足以改变结论的威胁。区分：
+    python scripts/validate_card.py CARD.md --mode draft
 
-- 来源已经报告的限制；
-- 从已核设计、数据或版本关系能直接看出的限制；
-- 本方尚待验证的怀疑。
+Before handoff:
 
-主动查找负结果、失败情景、内部冲突、替代解释和外推差距。没有检出问题不能写成问题不存在。
+    python scripts/validate_card.py CARD.md --mode final --index-root VAULT_OR_REPOSITORY
 
-## 7. 给出用途结论
+Then reopen every decisive locator and perform the manual scientific review in SKILL.md. Fix R01-R08 failures; do not waive them with prose.
 
-整卡和关键 Cxx 分别选择：
+## 8. Synthesize decisions
 
-- 可直接使用；
-- 限条件使用；
-- 仅作线索；
-- 暂不可用；
-- 与当前问题无关。
+Only L2 or L3 claims may enter a Decision/Synthesis card. Create it with type decision-synthesis, list included and excluded claim IDs, group dependence and versions, expose conflicts, describe coverage and transferability, and record the six-dimension evidence profile with basis claim IDs.
 
-同时写明可用于什么、不可用于什么、改变了哪个主题／问题／方法／数据或工程决策，以及必须携带的边界。不要使用总分或笼统可信度标签。
+    python scripts/new_card.py --type decision-synthesis --card-id DS-20260904-001 --title Decision --decision-id DEC-001 --research-question-id RQ-001 --decision-owner USER --output DS-20260904-001_Decision.md
 
-## 8. 判断是否补读
+An unresolved load-bearing conflict blocks approved status. The decision card must say what is supported, what remains unsupported and what evidence would change the decision.
 
-只有“明确决策＋决定性缺口＋新材料可能改变判断”三门同时成立，才打开附件、代码或额外来源。写出最小路径和停止条件。达到停止条件立即结束；允许结论仍不足。
+## 9. Export the relation graph
 
-## 9. 验收和交付
+    python scripts/export_graph.py VAULT_OR_REPOSITORY --output evidence-graph.json
 
-先运行结构校验，再人工逐条打开 Cxx 定位，核对版本、数字、单位、分母、方向、比较、区间和语气。确认推断没有越过设计，来源事实、来源解释、忠实归纳和本方判断彼此分开。
+Unresolved edges mean a referenced Source, Claim or Decision object is absent from the scanned root. The graph is a derived view and never becomes a second source of scientific facts.
 
-交付时报告卡片路径、Zotero key、来源版本、阅读覆盖、关键 Cxx、用途结论、未决缺口和结构校验结果。结构 PASS 只表示格式可继续审查。
+## 10. Store and synchronize
 
-## 文件名和批次
+Keep one formal Markdown per source manifestation and one per decision. Commit cards, rules, manifests and graph views to Git. Keep full text, Zotero databases, credentials, raw data, restricted reports, caches and run outputs in their authorised systems.
 
-- 单卡：EC-YYYYMMDD-NNN_短题名.md；
-- 批次清单：MANIFEST-YYYYMMDD-NNN.md；
-- 批次必须由用户给定条目键、收藏夹或清单，不用检索词偷偷扩量；
-- 正式编号由写入目标库的主流程统一检索分配，子任务不预占；
-- 同一来源更新原卡，不新建“最终版2”。

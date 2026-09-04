@@ -29,7 +29,13 @@ def request_json(path: str, timeout: int = 15) -> Any:
     )
     try:
         with urllib.request.urlopen(req, timeout=timeout) as response:
-            return json.loads(response.read().decode("utf-8"))
+            raw = response.read().decode("utf-8")
+            try:
+                return json.loads(raw)
+            except json.JSONDecodeError:
+                if path == "/api/":
+                    return {"message": raw.strip()}
+                fail(f"Zotero local API returned non-JSON content for {path}")
     except urllib.error.HTTPError as exc:
         fail(f"Zotero local API returned HTTP {exc.code} for {path}")
     except urllib.error.URLError as exc:

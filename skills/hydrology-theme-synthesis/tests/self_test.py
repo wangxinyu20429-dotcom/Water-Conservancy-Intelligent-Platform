@@ -1,0 +1,131 @@
+#!/usr/bin/env python3
+"""Smoke-test admissibility, score recomputation, and metric provenance."""
+
+from __future__ import annotations
+import json
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+BUILD = ROOT / "scripts" / "build_theme.py"
+VALIDATE = ROOT / "scripts" / "validate_theme.py"
+
+SOURCE = """---
+card_schema: "evidence-card-v1.2"
+card_id: "EC-TEST-001"
+card_version: "1.2.0"
+card_type: "source_evidence"
+artifact_type: "journal_article"
+workflow_status: "source_checked"
+completion_level: "L2"
+source_work_id: "WORK-001"
+source_manifestation_id: "SRC-001"
+source_version: "version-of-record"
+verified_claim_ids: ["EC-TEST-001-C01"]
+independence_group_ids: ["IG-001"]
+version_family_ids: ["VF-001"]
+reading_scope: "full_text"
+---
+# Test source
+- 年份／发布日期：2025
+
+~~~claim-json
+{
+  "claim_id": "EC-TEST-001-C01",
+  "source_id": "SRC-001",
+  "statement_role": "source_fact",
+  "inference_type": "comparative",
+  "support_status": "supported",
+  "statement": "A located test statement.",
+  "scope": {"object_or_denominator": "basins", "spatial": "test", "temporal": "test", "comparator": "baseline"},
+  "locator": {"material": "article", "page_or_section": "Results", "table_figure_clause_or_row": "Table 1", "context": "test"},
+  "directly_supports": "test comparison",
+  "does_not_support": "causality",
+  "independence_group_ids": ["IG-001"],
+  "verification_status": "source_checked"
+}
+~~~
+"""
+
+
+def run(*args: str, ok: bool = True) -> subprocess.CompletedProcess[str]:
+    result = subprocess.run([sys.executable, *args], text=True, capture_output=True)
+    if ok and result.returncode:
+        raise AssertionError(result.stdout + result.stderr)
+    if not ok and result.returncode == 0:
+        raise AssertionError("expected failure")
+    return result
+
+
+def replace_priority(theme: str, item: dict) -> str:
+    start = theme.index("~~~literature-priority-json")
+    body_start = theme.index("\n", start) + 1
+    end = theme.index("\n~~~", body_start)
+    block = json.loads(theme[body_start:end])
+    block["items"] = [item]
+    return theme[:body_start] + json.dumps(block, ensure_ascii=False, indent=2) + theme[end:]
+
+
+def main() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        work = Path(tmp)
+        source = work / "EC-TEST-001.md"
+        theme = work / "theme.md"
+        source.write_text(SOURCE, encoding="utf-8")
+        run(str(BUILD), "--theme-ref", "draft:test", "--title", "测试主题",
+            "--question", "测试问题", "--intended-use", "结构验收",
+            "--card", str(source), "--claim", "EC-TEST-001-C01",
+            "--output", str(theme))
+        built = theme.read_text(encoding="utf-8")
+        assert 'included_claim_ids: ["EC-TEST-001-C01"]' in built
+        run(str(VALIDATE), str(theme), "--mode", "draft", "--index-root", str(work))
+
+        item = {
+            "source_card_id": "EC-TEST-001",
+            "source_manifestation_id": "SRC-001",
+            "source_type": "journal_article",
+            "publication_year": 2025,
+            "eligible_claim_ids": ["EC-TEST-001-C01"],
+            "scientific_roles": ["load_bearing_evidence", "current_frontier"],
+            "load_bearing": True,
+            "foundational_exception": {"applies": False, "reason": "", "basis_claim_ids": []},
+            "journal_metric": {
+                "status": "verified", "metric_name": "JIF", "metric_value": 9.0,
+                "metric_year": 2025, "category": "Water Resources",
+                "percentile_or_quartile": "95", "metric_resolution": "percentile",
+                "source": "test authoritative record", "checked_at": "2026-09-07"
+            },
+            "components": {
+                "evidence_quality_and_independence": 4,
+                "question_directness": 4,
+                "decisive_gap_closure": 4,
+                "recency": 4,
+                "verified_field_normalized_journal_signal": 4
+            },
+            "component_basis": {
+                "evidence_quality_and_independence": "verified Claim",
+                "question_directness": "test question",
+                "decisive_gap_closure": "test decision",
+                "recency": "2025 relative to 2026",
+                "verified_field_normalized_journal_signal": "95th percentile"
+            },
+            "not_applicable_components": [], "unknown_components": [],
+            "frontier_attention_score": 100, "provisional_min": 100,
+            "provisional_max": 100, "ranking_completeness": "100%",
+            "priority_tier": "P1", "priority_reason": "test", "next_action": "review"
+        }
+        theme.write_text(replace_priority(built, item), encoding="utf-8")
+        run(str(VALIDATE), str(theme), "--mode", "draft", "--index-root", str(work))
+
+        bad = theme.read_text(encoding="utf-8").replace('"category": "Water Resources"', '"category": ""')
+        theme.write_text(bad, encoding="utf-8")
+        result = run(str(VALIDATE), str(theme), "--mode", "draft", "--index-root", str(work), ok=False)
+        assert "TG05" in result.stdout
+
+    print("PASS: theme builder and validator invariants")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,26 +1,24 @@
-# 八类来源判定
+# Source classification V1.2
 
-分类回答“这份材料主要怎样产生和承载证据”，不表示质量高低。
+Choose an artifact type from the object actually fixed by source_manifestation_id. Then choose all evidence roles used in the current work.
 
-| 类型 | 判定问题 | 不要误判为 |
-| --- | --- | --- |
-| 原创研究 | 是否通过实验、观测、模型、推导、访谈或混合设计产生新的分析结果？ | 仅介绍数据或代码的资源说明；综述 |
-| 综述与证据综合 | 是否明确检索、选择、组织或合并既有研究来回答综合问题？ | 引言很长的原创论文；仅列举文献的观点文 |
-| 调查、监测与统计报告 | 主要证据是否来自普查、抽样调查、监测网络或行政统计？ | 工程设计报告；政策文件中的背景数字 |
-| 工程项目报告 | 是否围绕具体工程阶段、方案、计算、实施、验收、运行或事故分析？ | 学术模型论文；纯统计年报 |
-| 图书与章节 | 是否以专著、教材、手册或章节形式组织概念、理论、方法或历史？ | 单篇论文；标准正文 |
-| 标准、指南与政策 | 主要作用是否规定要求、推荐做法、阈值、程序、权责或政策方向？ | 实证研究；工程验收结果 |
-| 数据集及数据说明 | 主要交付是否是可识别版本的数据、变量、元数据、质量和许可？ | 用数据回答科学问题的原创研究 |
-| 软件、模型与代码 | 主要交付是否是可识别版本的实现、运行接口、模型包或代码库？ | 只在附件附代码的原创研究 |
+| Dominant object | Type key | Common artifact types | Typical evidence roles |
+| --- | --- | --- | --- |
+| empirical, modelling, theoretical or methods study | original-research | journal_article, thesis, conference_paper, preprint | original_research, method_validation, mechanism |
+| a published or commissioned synthesis | review-synthesis | journal_article, report | review_synthesis, evidence_map |
+| official or institutional measurement summary | survey-monitoring-statistics | government_report, monitoring_bulletin, statistical_product | descriptive_statistics, monitoring_evidence |
+| one engineering project or asset stage | engineering-report | design_report, acceptance_report, operation_report, incident_report | engineering_evidence, operational_performance, safety |
+| a stable conceptual or teaching treatment | book-chapter | book, chapter, handbook, textbook | concept_definition, theory_background |
+| a normative instrument | standard-guideline-policy | standard, guideline, regulation, policy | normative_requirement, conformity |
+| a released collection or product used as data | dataset-data-product | dataset, data_product, database, api | dataset_identity, dataset_quality, fitness_for_purpose |
+| a released implementation or model artifact | software-model-code | repository, software_release, model_package, container | implementation_identity, verification, validation, reproducibility |
 
-## 复合来源
+The platform Decision/Synthesis card is not a source type. It is a derived decision object and must reference claims from source cards.
 
-先写本轮要支持的判断，再选择主证据角色。例如：
+Ambiguous examples:
 
-- 政府发布的水库事故报告，以工程过程和原因分析为主时用工程报告卡；其中监测表作为次要统计模块。
-- 数据论文以数据生产、质量和访问为主要贡献时用数据卡；若核心是使用数据验证假设，则用原创研究卡并链接数据卡。
-- 软件论文若核心是算法性能实验，用原创研究卡；若核心是版本、接口和实现资源，用软件卡。
-- 标准的编制说明含文献综述时仍用标准卡；文献内容标成制定依据，不能当作已独立核验的研究结果。
-
-无法判定时保持 `classification_pending`，列出需要读取的最小位置，例如摘要末段、方法第一节、报告前言或成果说明。不要根据发布机构、文件扩展名或 Zotero itemType 强行选择。
+- A journal data paper is artifact_type journal_article. If used to establish dataset quality, add dataset_quality and use the dataset profile requirements for those claims.
+- A software paper tested against observations may have original_research and software_validation roles. The exact code release must still have its own source manifestation if implementation claims depend on it.
+- A government report containing a scientific model may have descriptive_statistics and model_validation claims. Do not treat the issuing authority as methodological validation.
+- A review that quotes an original study remains secondary evidence until the original manifestation and locator are checked.
 

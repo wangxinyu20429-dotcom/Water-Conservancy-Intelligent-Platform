@@ -26,7 +26,7 @@ artifact_type describes what the source object is. evidence_roles describe what 
 
 The visible card explains the source in ordinary scientific prose: the research problem, study design, evidence path, important findings, contribution, limitations and relevance to the current work. It must remain complete and understandable if the reader never opens the audit layer.
 
-Frontmatter remains flat so Obsidian, Git and the standard-library validator can read it without a YAML dependency. Nested Claim, water_context and Decision objects use strict JSON blocks, but source-card JSON blocks belong inside one final HTML-commented `MACHINE-AUDIT` section. The JSON Schemas document their contracts; scripts/validate_card.py can still read the raw Markdown and enforce the operational subset and R01-R08. Machine readability must not displace human comprehension.
+Frontmatter remains flat so Obsidian, Git and the standard-library validator can read it without a YAML dependency. Nested Claim, water_context and Decision objects use strict JSON blocks. Source-card calibration notes and machine JSON belong in separate HTML `<details>` elements without an `open` attribute, so readers see two closed summaries by default and may expand them when auditing. The JSON Schemas document their contracts; scripts/validate_card.py reads the raw Markdown and enforces the operational subset and R01-R08. Machine readability must not displace human comprehension.
 
 ## Four decision dimensions
 

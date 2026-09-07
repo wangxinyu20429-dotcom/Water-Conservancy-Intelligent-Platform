@@ -31,13 +31,15 @@ For L0, use identity records. For L1, read the abstract or executive material an
 
 ## 6. Write the human analysis
 
-Write the visible card before the audit objects. Lead with a one-sentence takeaway, then explain the research problem, study design, method in plain scientific language, three to five decisive findings, the source's contribution, relevance to the current work and conclusion boundaries. Put numbers in small tables where that improves interpretation. A reader must understand the source without reading any identifier or schema field.
+Write the visible card before the audit objects. Lead with a one-sentence takeaway, then reconstruct the literature gap, research questions, study design, data-generation path, method in plain scientific language, three to five decisive findings, important figures/tables, contribution, evidence strength, reproducibility, relevance to the current work and conclusion boundaries. Put numbers in small tables where that improves interpretation. A reader must understand the source without reading any identifier or schema field.
 
-## 7. Build the hidden claim audit
+For a substantive full-main-text original research paper, target 6,000–10,000 Chinese characters in the visible analysis. Count only the research narrative, not frontmatter, links, repeated metadata, calibration notes or machine fields. When the source does not contain enough substance, write a shorter card and state the reason; never expand by paraphrasing the same conclusion repeatedly.
+
+## 7. Build the default-collapsed claim audit
 
 After the human analysis is coherent, create one claim-json block per proposition. Use a globally unique claim_id. Record source fact, evidence origin, exact scope, locator, permitted inference, support, non-support, interpretations, relations, independence groups and verification. Add the method_requirements demanded by the inference type.
 
-Wrap all machine-only blocks in one `<!-- MACHINE-AUDIT-BEGIN ... MACHINE-AUDIT-END -->` section at the end of the same Markdown. Do not cap the complete record at three claims. Visible findings should normally focus on the three to five results needed to understand the source.
+Put calibration/manual-review notes in one `<details>` block and all machine-only objects in a second `<details>` block. Omit the `open` attribute so both are closed by default. Do not cap the complete record at three claims. Visible findings should normally focus on the three to five result groups needed to understand the source; the audit claim count may be larger because numbers and boundaries remain atomic.
 
 ## 8. Validate and review
 
@@ -49,7 +51,7 @@ Before handoff:
 
     python scripts/validate_card.py CARD.md --mode final --index-root VAULT_OR_REPOSITORY
 
-Then reopen every decisive locator and perform the manual scientific review in SKILL.md. Confirm that every visible number and conclusion maps to a hidden claim. Fix R01-R08 failures; do not waive them with prose.
+Then reopen every decisive locator and perform the manual scientific review in SKILL.md. Confirm that every visible number and conclusion maps to a claim in the collapsed audit block. Check that both `<details>` blocks are closed by default and that the expanded main text contains no claim JSON. Fix R01-R08 failures; do not waive them with prose.
 
 ## 9. Synthesize decisions
 

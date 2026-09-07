@@ -1,6 +1,6 @@
 ---
 name: hydrology-evidence-cards
-description: Read a user-specified Zotero source and produce a human-readable water-research evidence card that explains what the source studied, how it worked, what it found, why it matters, and where its conclusions stop. Keep source-located Claim objects as a hidden audit layer for validation and later synthesis. Use for Zotero-to-Obsidian evidence work, not literature discovery or unsupported novelty generation.
+description: Read a user-specified Zotero source and produce a human-readable water-research evidence card that explains what the source studied, how it worked, what it found, why it matters, and where its conclusions stop. Keep source-located Claim objects in a default-collapsed audit layer for validation and later synthesis. Use for Zotero-to-Obsidian evidence work, not literature discovery or unsupported novelty generation.
 ---
 
 # Hydrology Evidence Cards V1.2
@@ -25,9 +25,11 @@ The visible Markdown must let a researcher answer these questions in two minutes
 
 Write the paper's intellectual story first. Define technical terms in ordinary research language, connect methods to results, and explain why each major result matters. Put DOI, official source and Zotero links in a short source section.
 
-Do not render raw `claim-json`, schema names, relation arrays, verification enums or identifier machinery in the visible article. Keep those objects in one HTML-commented `MACHINE-AUDIT` section at the end of the same Markdown file so validators can read them while Obsidian and GitHub readers do not see them. A reader may ignore that hidden layer without losing the paper's argument.
+For a substantive journal article read from the full main text, an original-research L2 card should normally contain **6,000–10,000 Chinese characters of visible analysis**, excluding frontmatter, source links, calibration notes and machine audit. This is a depth target, not permission to pad: use the space to reconstruct the literature gap, evidence path, method logic, result chain, important figures/tables, contribution relative to prior approaches, uncertainty, reproducibility and concrete value for the current research. If the source is too short or simple to justify 6,000 characters, state why and stop rather than repeat content.
 
-Conflicts and missing fields are quality-control information, not the narrative center. Explain a conflict prominently only when it changes a main result or blocks the current decision. Put minor editorial inconsistencies in a brief note near the end. Never multiply one discrepancy into repeated warnings throughout the visible card.
+Do not leave raw `claim-json`, schema names, relation arrays, verification enums or identifier machinery expanded in the main article. Put calibration/manual-review notes and machine audit in two separate HTML `<details>` blocks without the `open` attribute, so both are closed by default in Obsidian reading view and GitHub. A reader must understand the paper without opening either block.
+
+Conflicts and missing fields are quality-control information, not the narrative center. Explain a conflict prominently only when it changes a main result or blocks the current decision. Put minor editorial inconsistencies in the collapsed calibration block. Never multiply one discrepancy into repeated warnings throughout the visible card.
 
 ## Required reading order
 
@@ -45,7 +47,7 @@ Conflicts and missing fields are quality-control information, not the narrative 
 - Register an exact source manifestation or release once. Use source_work_id to group manifestations of the same intellectual work and source_manifestation_id for the exact version used.
 - Do not copy full source metadata for each research question. Add globally unique Claim objects to the single source card and link their claim_id values to multiple Decision cards.
 - Separate artifact_type from evidence_roles. A journal article can supply original_research, dataset_quality, and software_validation roles at the same time.
-- Each hidden claim-json block contains one proposition. Preserve direction, unit, denominator, comparison, uncertainty, qualifiers and precise locator.
+- Each audit claim-json block contains one proposition. Preserve direction, unit, denominator, comparison, uncertainty, qualifiers and precise locator.
 - A platform Decision/Synthesis card is a ninth card type. It references claim_id values, records inclusion, exclusion, dependence, conflicts, coverage, transferability and the current decision. It is not a published review source card.
 - Use independence_group_ids and version_family_ids to prevent repeated counting of the same station network, dataset, project, model family, preprint/publication pair, report series or commissioned work.
 
@@ -55,7 +57,7 @@ Conflicts and missing fields are quality-control information, not the narrative 
 | --- | --- | --- | --- |
 | L0 | identity, deduplication and version registration | exact source identity, manifestation, acquisition and access state | inventory only |
 | L1 | rapid screening | current question, potential role, result clue and first boundary | discovery and prioritisation only |
-| L2 | usable evidence | a complete human-readable analysis plus at least one located and source-checked hidden claim with scope, support boundary and verification record | may enter Decision/Synthesis |
+| L2 | usable evidence | a complete human-readable analysis plus at least one located and source-checked audit claim with scope, support boundary and verification record | may enter Decision/Synthesis |
 | L3 | full audit | all decisive claims, triggered method modules, conflicts, supplementary or run checks, independent review | high-impact, disputed or reproduction decisions |
 
 L0 and L1 must not be marked verified or directly applicable. Enter L3 only when all three dynamic-reading gates are true: a clear high-impact decision exists, a decisive evidence gap is located, and opening new material may change the judgment.
@@ -129,7 +131,7 @@ For each decisive finding in the visible analysis, reopen the named source versi
 
 ## Output and storage contract
 
-Return one human-readable Markdown source card per exact source version and one Decision/Synthesis card per platform decision. The source card contains the readable analysis and its hidden machine audit in the same file. Use stable file names such as EC-20260904-001_Short_Title.md and DS-20260904-001_Decision.md.
+Return one human-readable Markdown source card per exact source version and one Decision/Synthesis card per platform decision. The source card contains the readable analysis and its default-collapsed calibration and machine-audit blocks in the same file. Use stable file names such as EC-20260904-001_Short_Title.md and DS-20260904-001_Decision.md.
 
 For a bounded batch, also create a manifest containing the requested scope, matched Zotero keys, source and manifestation IDs, output paths, levels, reading coverage, validation result and unresolved blockers. Do not expand the batch beyond the user's item list or collection.
 

@@ -22,9 +22,11 @@ Changing wording without changing the proposition updates the claim in place wit
 
 artifact_type describes what the source object is. evidence_roles describe what its claims do. One source has one artifact type and may have several roles. This prevents a data paper, software paper or engineering study from being forced into one scientific role.
 
-## Structured JSON blocks
+## Human view and machine audit
 
-Frontmatter remains flat so Obsidian, Git and the standard-library validator can read it without a YAML dependency. Nested Claim, water_context and Decision objects use strict JSON blocks. The JSON Schemas document their contracts; scripts/validate_card.py enforces the operational subset and R01-R08.
+The visible card explains the source in ordinary scientific prose: the research problem, study design, evidence path, important findings, contribution, limitations and relevance to the current work. It must remain complete and understandable if the reader never opens the audit layer.
+
+Frontmatter remains flat so Obsidian, Git and the standard-library validator can read it without a YAML dependency. Nested Claim, water_context and Decision objects use strict JSON blocks, but source-card JSON blocks belong inside one final HTML-commented `MACHINE-AUDIT` section. The JSON Schemas document their contracts; scripts/validate_card.py can still read the raw Markdown and enforce the operational subset and R01-R08. Machine readability must not displace human comprehension.
 
 ## Four decision dimensions
 
@@ -40,4 +42,3 @@ Decision cards additionally use a six-dimension evidence profile: directness, in
 ## Scientific status
 
 Completion level, workflow status, AI extraction status, evidence certainty and applicability are different axes. A source can be fully extracted but scientifically weak; highly relevant but not checked; official but inapplicable; reproducible but not valid for the target basin.
-

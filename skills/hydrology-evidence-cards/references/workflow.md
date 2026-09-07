@@ -29,13 +29,17 @@ Example:
 
 For L0, use identity records. For L1, read the abstract or executive material and label it honestly. For L2, open the exact pages, tables, figures, clauses, rows, metadata or logs needed for each decisive claim. For L3, follow the stated minimum path through methods, supplements, data, code, versions or runs and stop at the predeclared condition.
 
-## 6. Write claims
+## 6. Write the human analysis
 
-Create one claim-json block per proposition. Use a globally unique claim_id. Record source fact, evidence origin, exact scope, locator, permitted inference, support, non-support, interpretations, relations, independence groups and verification. Add the method_requirements demanded by the inference type.
+Write the visible card before the audit objects. Lead with a one-sentence takeaway, then explain the research problem, study design, method in plain scientific language, three to five decisive findings, the source's contribution, relevance to the current work and conclusion boundaries. Put numbers in small tables where that improves interpretation. A reader must understand the source without reading any identifier or schema field.
 
-Do not cap the complete record at three claims. Only the quick decision summary is limited to the most decision-relevant three.
+## 7. Build the hidden claim audit
 
-## 7. Validate and review
+After the human analysis is coherent, create one claim-json block per proposition. Use a globally unique claim_id. Record source fact, evidence origin, exact scope, locator, permitted inference, support, non-support, interpretations, relations, independence groups and verification. Add the method_requirements demanded by the inference type.
+
+Wrap all machine-only blocks in one `<!-- MACHINE-AUDIT-BEGIN ... MACHINE-AUDIT-END -->` section at the end of the same Markdown. Do not cap the complete record at three claims. Visible findings should normally focus on the three to five results needed to understand the source.
+
+## 8. Validate and review
 
 During drafting:
 
@@ -45,9 +49,9 @@ Before handoff:
 
     python scripts/validate_card.py CARD.md --mode final --index-root VAULT_OR_REPOSITORY
 
-Then reopen every decisive locator and perform the manual scientific review in SKILL.md. Fix R01-R08 failures; do not waive them with prose.
+Then reopen every decisive locator and perform the manual scientific review in SKILL.md. Confirm that every visible number and conclusion maps to a hidden claim. Fix R01-R08 failures; do not waive them with prose.
 
-## 8. Synthesize decisions
+## 9. Synthesize decisions
 
 Only L2 or L3 claims may enter a Decision/Synthesis card. Create it with type decision-synthesis, list included and excluded claim IDs, group dependence and versions, expose conflicts, describe coverage and transferability, and record the six-dimension evidence profile with basis claim IDs.
 
@@ -55,13 +59,12 @@ Only L2 or L3 claims may enter a Decision/Synthesis card. Create it with type de
 
 An unresolved load-bearing conflict blocks approved status. The decision card must say what is supported, what remains unsupported and what evidence would change the decision.
 
-## 9. Export the relation graph
+## 10. Export the relation graph
 
     python scripts/export_graph.py VAULT_OR_REPOSITORY --output evidence-graph.json
 
 Unresolved edges mean a referenced Source, Claim or Decision object is absent from the scanned root. The graph is a derived view and never becomes a second source of scientific facts.
 
-## 10. Store and synchronize
+## 11. Store and synchronize
 
 Keep one formal Markdown per source manifestation and one per decision. Commit cards, rules, manifests and graph views to Git. Keep full text, Zotero databases, credentials, raw data, restricted reports, caches and run outputs in their authorised systems.
-

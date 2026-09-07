@@ -1,17 +1,33 @@
 ---
 name: hydrology-evidence-cards
-description: Read a user-specified source and available indexed full text from local Zotero, then register one versioned Source, extract source-located Claim objects, and connect verified claims to a separate platform Decision/Synthesis card. Supports L0-L3 completion, eight source profiles, water context, hydrology method modules, AI provenance, relation-graph export, and R01-R08 hard validation. Use for Zotero-to-Obsidian evidence work in water research. Do not use for literature discovery, bibliographic identity correction, or unsupported novelty generation.
+description: Read a user-specified Zotero source and produce a human-readable water-research evidence card that explains what the source studied, how it worked, what it found, why it matters, and where its conclusions stop. Keep source-located Claim objects as a hidden audit layer for validation and later synthesis. Use for Zotero-to-Obsidian evidence work, not literature discovery or unsupported novelty generation.
 ---
 
 # Hydrology Evidence Cards V1.2
 
-Build auditable research evidence from exact source content. Do not write a generic literature summary.
+Build a scientifically rigorous card that a researcher can understand before seeing any audit machinery. Do not write a generic literature summary or expose a wall of schema fields as the main reading experience.
 
 The invariant chain is:
 
 Source version → Claim → locator and evidence-generating design → permitted inference and boundary → Decision/Synthesis.
 
 Machine validation proves only that the structure and explicit rules pass. It never proves that a scientific claim is true.
+
+## Human-readable output is the primary deliverable
+
+The visible Markdown must let a researcher answer these questions in two minutes:
+
+1. What problem does the source study, and why does it matter?
+2. What data, objects, comparison and method does it actually use?
+3. What are the three to five most important findings, with interpretable numbers where available?
+4. What is the source's real scientific contribution and practical value for the current research?
+5. What can and cannot be concluded, and what should be done next?
+
+Write the paper's intellectual story first. Define technical terms in ordinary research language, connect methods to results, and explain why each major result matters. Put DOI, official source and Zotero links in a short source section.
+
+Do not render raw `claim-json`, schema names, relation arrays, verification enums or identifier machinery in the visible article. Keep those objects in one HTML-commented `MACHINE-AUDIT` section at the end of the same Markdown file so validators can read them while Obsidian and GitHub readers do not see them. A reader may ignore that hidden layer without losing the paper's argument.
+
+Conflicts and missing fields are quality-control information, not the narrative center. Explain a conflict prominently only when it changes a main result or blocks the current decision. Put minor editorial inconsistencies in a brief note near the end. Never multiply one discrepancy into repeated warnings throughout the visible card.
 
 ## Required reading order
 
@@ -29,7 +45,7 @@ Machine validation proves only that the structure and explicit rules pass. It ne
 - Register an exact source manifestation or release once. Use source_work_id to group manifestations of the same intellectual work and source_manifestation_id for the exact version used.
 - Do not copy full source metadata for each research question. Add globally unique Claim objects to the single source card and link their claim_id values to multiple Decision cards.
 - Separate artifact_type from evidence_roles. A journal article can supply original_research, dataset_quality, and software_validation roles at the same time.
-- Each claim-json block contains one proposition. Preserve direction, unit, denominator, comparison, uncertainty, qualifiers and precise locator.
+- Each hidden claim-json block contains one proposition. Preserve direction, unit, denominator, comparison, uncertainty, qualifiers and precise locator.
 - A platform Decision/Synthesis card is a ninth card type. It references claim_id values, records inclusion, exclusion, dependence, conflicts, coverage, transferability and the current decision. It is not a published review source card.
 - Use independence_group_ids and version_family_ids to prevent repeated counting of the same station network, dataset, project, model family, preprint/publication pair, report series or commissioned work.
 
@@ -39,7 +55,7 @@ Machine validation proves only that the structure and explicit rules pass. It ne
 | --- | --- | --- | --- |
 | L0 | identity, deduplication and version registration | exact source identity, manifestation, acquisition and access state | inventory only |
 | L1 | rapid screening | current question, potential role, result clue and first boundary | discovery and prioritisation only |
-| L2 | usable evidence | at least one located and source-checked claim with scope, support boundary and verification record | may enter Decision/Synthesis |
+| L2 | usable evidence | a complete human-readable analysis plus at least one located and source-checked hidden claim with scope, support boundary and verification record | may enter Decision/Synthesis |
 | L3 | full audit | all decisive claims, triggered method modules, conflicts, supplementary or run checks, independent review | high-impact, disputed or reproduction decisions |
 
 L0 and L1 must not be marked verified or directly applicable. Enter L3 only when all three dynamic-reading gates are true: a clear high-impact decision exists, a decisive evidence gap is located, and opening new material may change the judgment.
@@ -71,7 +87,7 @@ Zotero itemType is only a clue. Choose artifact_type from what the object is and
 
 Conditional modules follow the inference and method, not the publication format. Include only relevant modules, but do not omit a module that carries a decisive inference assumption.
 
-## Claim rules
+## Hidden claim audit rules
 
 - Distinguish source_fact, author_interpretation and analyst_judgment.
 - Distinguish descriptive, comparative, association, causal, prediction, mechanism, transferability, normative and implementation inference types.
@@ -100,7 +116,7 @@ AI-assisted or automated extraction must record extraction_method, generator_or_
 
 ## Manual scientific review
 
-For each decisive claim, reopen the named source version and locator and verify:
+For each decisive finding in the visible analysis, reopen the named source version and locator and verify:
 
 1. The fact preserves direction, unit, denominator, comparison, uncertainty and qualifiers.
 2. The independent unit and evidence-generating design support the stated inference type.
@@ -113,9 +129,8 @@ For each decisive claim, reopen the named source version and locator and verify:
 
 ## Output and storage contract
 
-Return one Markdown source card per exact source version and one Decision/Synthesis card per platform decision. Use stable file names such as EC-20260904-001_Short_Title.md and DS-20260904-001_Decision.md.
+Return one human-readable Markdown source card per exact source version and one Decision/Synthesis card per platform decision. The source card contains the readable analysis and its hidden machine audit in the same file. Use stable file names such as EC-20260904-001_Short_Title.md and DS-20260904-001_Decision.md.
 
 For a bounded batch, also create a manifest containing the requested scope, matched Zotero keys, source and manifestation IDs, output paths, levels, reading coverage, validation result and unresolved blockers. Do not expand the batch beyond the user's item list or collection.
 
 Git may store bibliographic identity, source links, cards, manifests and derived graph JSON. Keep licensed full text, Zotero databases, credentials, temporary extracts, restricted project files and large datasets in their authorised systems.
-

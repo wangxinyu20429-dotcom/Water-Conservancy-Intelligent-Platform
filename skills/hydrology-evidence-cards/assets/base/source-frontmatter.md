@@ -53,18 +53,18 @@ recheck_trigger: "{{RECHECK_TRIGGER}}"
 
 # {{CARD_ID}} {{TITLE}}
 
-> 本文件是一个来源版本的唯一证据记录。来源身份只在这里维护；声明用全局 claim_id 连接多个研究问题和决策。机器校验通过只表示结构规则满足，不表示科学结论已经人工确认。
+> 用一句话说明这篇文献研究了什么、最重要的发现是什么，以及它对当前科研工作有什么价值。
 
-## L0 来源登记
+## 文献信息与原文入口
 
-- 题名：{{TITLE}}
-- 作者／责任机构：{{CREATORS}}
-- 年份／发布日期：{{DATE}}
-- 来源／出版者／仓库：{{VENUE}}
-- DOI／ISBN／标准号／数据或软件标识符：{{IDENTIFIER}}
-- 正式入口：{{SOURCE_URL}}
-- 当前取得材料：
-- 未取得材料及 missing_status：
-- 同一作品、版本家族和独立性组说明：
+- **题名：** {{TITLE}}
+- **作者／责任机构：** {{CREATORS}}
+- **年份／发布日期：** {{DATE}}
+- **期刊／出版者／仓库：** {{VENUE}}
+- **DOI／ISBN／正式标识：** {{IDENTIFIER}}
+- **官方入口：** {{SOURCE_URL}}
+- **Zotero入口与已读材料：**
+- **尚未取得或未读的材料：**
+- **当前复核状态：**
 
-允许的 missing_status 只有：not_applicable、not_obtained、not_read、not_reported、not_found_after_check、conflict_pending。
+技术状态词只写入文末隐藏审计区；这里用正常语言告诉读者实际读了什么、没读什么。

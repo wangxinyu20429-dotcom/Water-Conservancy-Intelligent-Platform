@@ -46,14 +46,160 @@ relevance: "central"
 verification_readiness: "partially_verified"
 applicability: "transfer_check_required"
 decision_effect: "no_change"
-load_bearing_conflict: true
+load_bearing_conflict: false
 unresolved_conflict_ids: ["CONF-EC-20260907-001-01"]
-recheck_trigger: "Resolve the 85-versus-98 hospital count and obtain human review before any claim becomes theme-bearing."
+recheck_trigger: "Complete human review before any claim becomes theme-bearing; treat the 85-versus-98 hospital count as a secondary editorial discrepancy."
 ---
 
 # EC-20260907-001 城市洪涝下关键设施可达性快速失效预警与冗余制图
 
-> 这是同一正式来源版本的唯一证据记录。当前为AI辅助L2草稿：Codex已经对照Zotero索引文本和PDF决定性页面定位声明，但尚未由本人完成人工复核。`verified_claim_ids`为空，任何声明都不能进入正式主题综合。
+> **一句话读懂：** 这篇论文研究城市洪水淹断道路后，居民通往医院、食品商店和药房的道路可达性会在什么时候开始快速恶化，以及哪些道路和地区最值得提前关注。它的主要价值是一套“发现快速失效时点—定位关键道路—绘制可达冗余”的网络分析方法，不是一个已经通过业务检验的实时洪水预报系统。
+
+## 先看结论
+
+论文以美国得克萨斯州 Harris County 为例，把道路、医院、食品商店和药房放进同一个网络模型。随着受洪水影响的道路逐步被移除，作者反复计算还有多少道路节点能够在限定距离内到达至少一个关键设施。当这条“可达节点数”曲线开始加速下降时，作者把对应时刻定义为快速失效预警点，再把该时刻失效的道路映射出来，作为候选关键道路。
+
+研究得到的核心认识是：**城市道路网络尚未完全断裂时，关键设施可达性就可能已经进入快速下降阶段。** 因此，只看道路是否连通还不够，还要看居民能否通过剩余道路到达具体设施。
+
+对我们最有用的不是“洪水后第10小时”这个案例数字，而是论文建立的分析链条：
+
+> 洪水导致道路失效 → 关键设施可达性随时间变化 → 识别快速下降起点 → 找到触发该变化的道路 → 判断哪些地区缺少替代设施。
+
+## 论文为什么要做这件事
+
+传统道路网络研究经常关注最大连通分量，即洪水后还有多少道路彼此连通。但道路仍然连成一片，并不代表居民还能到达医院、买到食物或取得药品。作者因此把研究目标从“道路是否连通”改成“道路是否还能把节点连接到关键设施”。
+
+论文主要回答三个问题：
+
+1. 洪水过程中，关键设施可达性从什么时候开始快速下降？
+2. 哪些失效道路最常与这个快速下降点同时出现？
+3. 洪水结束后，哪些地区只能到达很少的设施，甚至无法到达任何医院？
+
+## 作者具体怎么做
+
+### 1. 建立道路—设施网络
+
+案例道路网络包含144,315个节点和203,671条边。设施分为医院、食品商店和药房。作者设定：道路节点在5 miles内能到达医院，或在4 miles内能到达食品商店/药房，就算仍具有相应设施可达性。
+
+这里的“可达”只是网络距离阈值，未包含交通拥堵、设施容量、真实居民选择和服务质量。
+
+### 2. 构造两种洪水道路失效过程
+
+- **Hurricane Harvey情景：** 结合洪水监测站状态、道路高程和相邻传播规则，构造38小时的道路失效序列，共涉及28,143条道路边。
+- **500年一遇情景：** 在静态洪泛区内识别58,956条可能失效道路，随机改变洪水起点和道路失效顺序，运行1000次模拟。
+
+Harvey情景并非每一条道路、每一个时刻都来自实测。监测站没有覆盖到的传播过程由作者用低洼道路和邻近扩展规则补全。
+
+### 3. 计算关键设施可达性
+
+每移除一批受洪水影响的道路，作者就计算一次仍能到达至少一个指定设施的道路节点数，形成随洪水过程变化的可达性曲线。
+
+### 4. 找快速下降的起点
+
+作者没有把曲线最低点或最陡点当作预警，而是在对数坐标中寻找可达性下降速率开始明显加快的位置。这个点表示网络尚未完全失效，但关键设施可达性即将进入更快恶化阶段。
+
+### 5. 从预警点反查道路和地区
+
+作者记录每次模拟在预警点失效的道路。反复出现在预警点的道路被视为候选关键道路。随后统计每个节点还能到达多少家医院，并与社会脆弱性指数进行空间叠置。
+
+## 最关键的研究结果
+
+### 结果一：Harvey情景在第10小时出现快速失效信号
+
+在作者构造的Harvey 38小时道路失效序列中，医院、食品商店和药房三条曲线都在第20个时步出现预警点。每个时步为30分钟，因此对应洪水过程开始后的10小时。
+
+当时仍可到达至少一个相应设施的道路节点数为：
+
+| 设施 | 预警点可达节点数 | 使用的距离阈值 |
+|---|---:|---:|
+| 医院 | 115,764 | 5 miles |
+| 食品商店 | 136,952 | 4 miles |
+| 药房 | 135,787 | 4 miles |
+
+这些数字表示道路节点，不是人口数量，也不是获得实际服务的人数。
+
+### 结果二：预警时刻会随道路失效顺序改变
+
+在500年一遇情景的1000次模拟中，预警点形成一个时间范围，而不是固定时刻。医院对应的预警时间分布更晚、范围更宽，医院可达性曲线的整体面积也低于食品商店和药房。
+
+作者认为，这可能与医院数量较少、空间分布更稀疏有关。但论文没有进行因果检验，所以这只能作为机制解释和后续研究假设。
+
+### 结果三：洪水显著压缩医院可达冗余
+
+按5 miles阈值，能够到达至少一家医院的道路节点数为：
+
+| 情景 | 至少可达一家医院的节点数 | 相对无洪水基线 |
+|---|---:|---:|
+| 无洪水 | 120,874 | 基线 |
+| Harvey | 83,613 | 减少30.83% |
+| 500年一遇 | 55,127 | 减少54.39% |
+
+完全无法在5 miles内到达医院的节点占比，也由无洪水时的16.24%上升到Harvey情景的29.57%和500年一遇情景的35.71%。这说明洪水带来的问题不仅是平均可达性下降，还包括部分地区彻底失去近距离医院选择。
+
+### 结果四：可以筛出候选关键道路
+
+在1000次500年一遇模拟中，单条道路出现在预警点的最高次数分别为：医院307次、食品商店359次、药房399次。作者据此绘制关键道路分布图。
+
+这些结果只能说明某些道路在模型中频繁与快速失效点同时出现。论文没有实施道路加固或封控对照实验，不能直接证明保护这些道路一定会提高现实韧性。
+
+### 结果五：可达性损失可以与社会脆弱性联合筛查
+
+作者把“无法到达任何医院”的道路节点与人口普查区社会脆弱性指数叠置，寻找高社会脆弱性且医院可达冗余不足的区域。这个分析适合发现重点调查区，但只是空间叠置，没有证明社会脆弱性导致道路可达性损失，也没有直接测量健康结果。
+
+## 这篇论文真正贡献了什么
+
+### 方法贡献
+
+它把道路网络韧性从抽象的“还有多少道路连通”，推进到具有实际功能含义的“还能不能到达医院、食品商店和药房”，并把时间预警、关键道路和空间冗余放进同一套分析流程。
+
+### 研究设计贡献
+
+论文展示了在洪水道路时序不完整时，如何结合监测站、道路高程和情景规则构造失效序列；又通过1000次不同道路失效顺序，观察预警结果对顺序变化的敏感性。
+
+### 水利科研价值
+
+这套框架可以连接城市洪水模拟、道路通行和公共服务可达性。后续研究可把二维水动力模拟产生的积水深度和持续时间转成道路失效概率，再检验关键设施可达性预警是否具有稳定提前量。
+
+## 对我们后续研究最有价值的方向
+
+1. **把情景道路失效升级为水动力驱动。** 用淹没深度、流速和持续时间决定道路何时部分或完全失效，减少人工传播规则对结果的影响。
+2. **把距离阈值升级为真实通行时间。** 纳入拥堵、绕行、桥梁和不同交通方式，不再只用4或5 miles判断可达。
+3. **加入设施容量和人口需求。** 区分“道路上能到达医院”与“医院实际上能接收患者”。
+4. **把预警算法做成可验证的预测问题。** 报告提前量、误报率、漏报率、校准和时间外验证，而不只是在完整模拟曲线上寻找变化点。
+5. **开展跨城市、跨洪水事件验证。** 判断关键道路和预警规律是否只适用于Harris County的数据和设施布局。
+
+这些是由论文方法和局限推导出的研究方向，不是论文已经完成的工作，也还不是本平台批准的正式主题。
+
+## 阅读这篇论文时要守住的边界
+
+- “第10小时预警”只属于作者构造的Harvey道路失效序列，不能作为其他城市的通用时间规律。
+- 1000次模拟共享同一城市、道路网络、洪泛区和模型假设，不等于1000个独立洪水案例。
+- 道路只有“正常/失效”两种状态，没有模拟积水较浅时的降速、拥堵和局部通行。
+- 可达性按道路节点和固定距离计算，不能直接解释为人口覆盖、实际就医、健康结果或设施服务能力。
+- 论文只有单城市案例和模型内部检查，没有独立城市或现实预警系统的外部验证。
+
+## 建议怎样使用这篇文献
+
+**可以用来支持：** 城市洪水研究需要从道路拓扑连通性转向关键设施功能可达性；快速下降点、候选关键道路和设施冗余可以构成一个连续分析流程；道路失效顺序会影响预警结果。
+
+**不应写成：** 论文已经建立准确的实时洪水预警系统；保护高频道路必然提高城市韧性；Harris County的10小时阈值可以直接迁移；社会脆弱性导致医院可达性下降。
+
+## 文献信息与原文入口
+
+- Gangwal, U.; Dong, S. (2022). *Critical facility accessibility rapid failure early-warning detection and redundancy mapping in urban flooding*.
+- 期刊：*Reliability Engineering & System Safety*, 224, 108555。
+- DOI：[10.1016/j.ress.2022.108555](https://doi.org/10.1016/j.ress.2022.108555)
+- 出版页面：[ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0951832022002046)
+- Zotero：[打开个人库条目](zotero://select/library/items/YAC6YLJF)
+- 当前状态：AI辅助阅读主文并定位关键结果；尚待本人按原文逐项复核，因此暂不进入正式主题综合。
+
+## 校勘备注
+
+正文第4.1节写85家医院，图2图注写98家医院。该差异不改变论文的研究主线，但涉及设施数量解释时应先核对补充材料或作者数据。本卡不围绕这一个编辑差异展开。
+
+<!-- MACHINE-AUDIT-BEGIN
+
+以下内容用于机器结构校验，在Obsidian阅读视图和GitHub页面中隐藏；科研阅读以上述人读正文为准。
 
 ## L0 来源登记
 
@@ -539,6 +685,58 @@ recheck_trigger: "Resolve the 85-versus-98 hospital count and obtain human revie
 }
 ~~~
 
+~~~claim-json
+{
+  "claim_id": "EC-20260907-001-C15",
+  "source_id": "SRC-DOI-10.1016-J.RESS.2022.108555-VOR",
+  "claim_type": "numeric",
+  "statement_role": "source_fact",
+  "inference_type": "comparative",
+  "support_status": "supported",
+  "statement": "在5 miles医院可达阈值下，无法到达任何医院的道路节点占比在无洪水、Harvey和500年一遇情景中分别为16.24%、29.57%和35.71%。",
+  "evidence_origin": "医院可达冗余结果",
+  "scope": {"object_or_denominator": "Harris County道路网络节点；结果为零家医院可达的节点比例", "spatial": "Harris County, Texas", "temporal": "无洪水基线、Harvey终态和500年一遇情景终态", "comparator": "two flood scenarios versus no-flood network"},
+  "numeric": {"value": [16.24, 29.57, 35.71], "reported_unit": "percent of road-network nodes [baseline, Harvey, 500-year]", "normalized_value": [16.24, 29.57, 35.71], "normalized_unit": "percent", "conversion_rule": "values reported by authors", "uncertainty": "no_interval_reported"},
+  "locator": {"material": "published PDF", "page_or_section": "PDF pp.10-11, Section 4.4", "table_figure_clause_or_row": "Fig. 8 and adjacent text", "context": "zero reachable hospitals within the selected radius"},
+  "directly_supports": "说明模型中完全失去近距离医院可达性的道路节点比例随洪水情景增加。",
+  "does_not_support": "不等于相同比例的人口无法就医，也不包含医院容量和真实出行行为。",
+  "author_interpretation": "洪水增加缺少医院可达冗余的区域。",
+  "analyst_judgment": "适合作为网络服务缺口指标，不能直接替代人口医疗可及性指标。",
+  "method_requirements": {"access_radius": "5 miles", "outcome": "percentage of nodes with zero reachable hospitals"},
+  "relations": {"supports": ["EC-20260907-001-C11"], "contradicts": [], "qualifies": ["EC-20260907-001-C09"], "depends_on": ["EC-20260907-001-C01", "EC-20260907-001-C03", "EC-20260907-001-C04", "EC-20260907-001-C12"], "reproduces": [], "supersedes": []},
+  "independence_group_ids": ["IG-GANGWAL-DONG-2022-HARRIS-FLOOD-ACCESS"],
+  "verification_status": "partially_source_checked",
+  "verified_by": "Codex AI-assisted PDF visual and indexed-text cross-check",
+  "verified_at": "2026-09-07"
+}
+~~~
+
+~~~claim-json
+{
+  "claim_id": "EC-20260907-001-C16",
+  "source_id": "SRC-DOI-10.1016-J.RESS.2022.108555-VOR",
+  "claim_type": "numeric",
+  "statement_role": "source_fact",
+  "inference_type": "descriptive",
+  "support_status": "supported",
+  "statement": "Harris County案例道路网络包含144,315个节点和203,671条边，并按无向图处理。",
+  "evidence_origin": "案例研究对象说明",
+  "scope": {"object_or_denominator": "用于论文模拟的道路网络", "spatial": "Harris County, Texas", "temporal": "论文案例数据版本", "comparator": "not_applicable"},
+  "numeric": {"value": [144315, 203671], "reported_unit": "road-network nodes and edges", "normalized_value": [144315, 203671], "normalized_unit": "road-network nodes and edges", "conversion_rule": "not_applicable", "uncertainty": "not_reported"},
+  "locator": {"material": "published PDF", "page_or_section": "PDF p.6, Section 4.1", "table_figure_clause_or_row": "study-site paragraph", "context": "network is treated as undirected"},
+  "directly_supports": "界定案例网络规模和图结构。",
+  "does_not_support": "不说明道路节点和边在其他数据版本或其他城市中的数量。",
+  "author_interpretation": "not_applicable",
+  "analyst_judgment": "该数值是案例规模描述，不是独立样本量或统计功效。",
+  "method_requirements": {"graph_direction": "undirected"},
+  "relations": {"supports": [], "contradicts": [], "qualifies": ["EC-20260907-001-C06", "EC-20260907-001-C09", "EC-20260907-001-C15"], "depends_on": [], "reproduces": [], "supersedes": []},
+  "independence_group_ids": ["IG-GANGWAL-DONG-2022-HARRIS-FLOOD-ACCESS"],
+  "verification_status": "partially_source_checked",
+  "verified_by": "Codex AI-assisted PDF visual and indexed-text cross-check",
+  "verified_at": "2026-09-07"
+}
+~~~
+
 ## 冲突、缺失与审计风险
 
 | 冲突ID | 冲突字段 | 来源内证据A | 来源内证据B | 当前处理 | 解除条件 |
@@ -584,8 +782,10 @@ recheck_trigger: "Resolve the 85-versus-98 hospital count and obtain human revie
 - [ ] 对照情景构造段、图5—图6，确认1000次运行的随机化对象、预警区域和AUC比较（C07—C08、C13）。
 - [ ] 对照图7，确认307/359/399的分母、频次含义和Min-Max仅用于图示（C10）。
 - [ ] 对照图8—图9，确认医院节点数、百分比和SVI叠置含义（C09、C11）。
+- [ ] 对照图8相邻文字，确认无洪水、Harvey和500年一遇情景中零医院可达节点占比（C15）。
 - [ ] 对照第4.1节及讨论/结论，确认Harvey规则补全、静态洪泛区、二元道路和交通流限制（C12）。
 - [ ] 对照图3，确认访问半径测试范围、平台形态和5/4 miles选择（C14）。
+- [ ] 对照第4.1节，确认道路网络节点数、边数和无向图设定（C16）。
 - [ ] 检查在线补充材料、数据/代码入口与论文勘误；若未取得，保持`not_obtained/not_found_after_check`。
 - [ ] 将逐条确认的声明ID写入`verified_claim_ids`，填写本人姓名与日期；未逐条查看的声明不得批量勾选。
 
@@ -596,3 +796,5 @@ recheck_trigger: "Resolve the 85-versus-98 hospital count and obtain human revie
 - 变更门（已有新结果会改变既有证据判断）：`false`。本卡为首篇实验卡，没有既有正式判断被新结果取代。
 
 结论：当前停在AI辅助L2草稿。下一步是人工逐条复核和处理`CONF-EC-20260907-001-01`；三门未同时满足，不建立`DR-`，不从单卡生成正式主题或Idea。
+
+MACHINE-AUDIT-END -->

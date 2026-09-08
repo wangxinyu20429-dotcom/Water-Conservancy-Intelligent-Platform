@@ -1,7 +1,7 @@
 ---
 card_schema: "evidence-card-v1.2"
 card_id: "{{CARD_ID}}"
-card_version: "1.2.0"
+card_version: "1.4.0"
 card_type: "source_evidence"
 artifact_type: "{{ARTIFACT_TYPE}}"
 evidence_roles: {{EVIDENCE_ROLES}}

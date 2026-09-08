@@ -16,7 +16,7 @@ from validate_card import validate_text  # noqa: E402
 
 def frontmatter(**overrides: object) -> str:
     data: dict[str, object] = {
-        "card_schema": "evidence-card-v1.2", "card_id": "EC-TEST-001", "card_version": "1.2.0",
+        "card_schema": "evidence-card-v1.2", "card_id": "EC-TEST-001", "card_version": "1.4.0",
         "card_type": "source_evidence", "artifact_type": "journal_article", "evidence_roles": ["original_research"],
         "workflow_status": "source_checked", "completion_level": "L2", "source_work_id": "WORK-1",
         "source_manifestation_id": "SRC-1", "source_version": "v1", "source_snapshot_hash": "sha256:test",
@@ -56,13 +56,14 @@ def valid_claim() -> dict[str, object]:
 
 
 def source_text(claim: dict[str, object], **meta: object) -> str:
-    paragraph = "这部分把研究对象、输入资料、处理步骤、比较条件、输出指标和限制联系起来，所有未报告内容均明确记录，不用一般背景替代论文信息。" * 8
+    paragraph = "测试研究以A流域10个站点2001—2020年逐日流量为分析对象，先执行缺测标记和单位核对，再以方法A和方法B估算洪峰；表2报告方法A相对方法B差0.12m3/s及95%置信区间0.10—0.14m3/s。该比较只支持A流域、所列站点和时期内的估计差异，不支持因果或向其他流域直接外推。" * 7
     human = "\n\n".join([
         "## 研究要解决什么问题\n" + paragraph,
         "## 研究对象与边界\n" + paragraph,
         "## 数据到底是什么\n" + paragraph,
         "## 方法是怎样一步步得到结果的\n" + paragraph,
         "## 验证和比较是否站得住\n" + paragraph,
+        "## 全文证据链展开\n" + paragraph,
         "## 最关键的研究结果\n" + paragraph,
         "## 复现需要什么\n" + paragraph,
         "## 结论边界\n" + paragraph,
@@ -106,6 +107,9 @@ def main() -> None:
     shallow = frontmatter(completion_level="L1", workflow_status="screened", verification_readiness="clue_only", applicability="transfer_check_required", verified_claim_ids=[], reading_scope="full_text") + "\n\n## 研究结果\n方法有效。\n"
     expect("R09 shallow full-text card blocked", shallow, "R09")
 
+    filler = source_text(claim).replace("测试研究以A流域", "把上述输入按论文给出的规则转换为研究输出。测试研究以A流域", 1)
+    expect("R09 generic filler blocked", filler, "R09")
+
     decision = {
         "decision_id": "DEC-1", "research_question_ids": ["RQ1"], "included_claims": ["EC-TEST-001-C01"], "excluded_claims": [],
         "exclusion_reasons": {}, "independence_groups": {"DATA-1": ["EC-TEST-001-C01"]}, "version_families": {}, "agreements": [],
@@ -115,7 +119,7 @@ def main() -> None:
         "remaining_evidence_gap": "external validation", "next_update_trigger": "new independent study",
     }
     decision_meta = "\n".join([
-        "---", 'card_schema: "evidence-card-v1.2"', 'card_id: "DS-1"', 'card_version: "1.2.0"', 'card_type: "decision_synthesis"',
+        "---", 'card_schema: "evidence-card-v1.2"', 'card_id: "DS-1"', 'card_version: "1.4.0"', 'card_type: "decision_synthesis"',
         'workflow_status: "approved"', 'completion_level: "L2"', 'decision_id: "DEC-1"', 'research_question_ids: ["RQ1"]',
         'as_of_date: "2026-09-04"', 'decision_owner: "tester"', 'load_bearing_conflict: false', 'unresolved_conflict_ids: []',
         'included_claim_ids: ["EC-TEST-001-C01"]', 'excluded_claim_ids: []', 'independence_group_ids: ["DATA-1"]', 'version_family_ids: []',

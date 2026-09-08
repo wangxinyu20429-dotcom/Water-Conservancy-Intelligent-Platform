@@ -3,7 +3,7 @@ name: hydrology-evidence-cards
 description: Read a user-specified Zotero source and produce a source-grounded, human-readable water-research evidence card. Reconstruct the research question, study objects, actual data, method and validation chain, decisive results, contribution, reproducibility and conclusion boundaries; never replace them with a shallow abstract paraphrase. Keep machine audit fields default-collapsed. Use for Zotero-to-Obsidian evidence work, source-card rewriting and evidence preparation for theme synthesis.
 ---
 
-# Hydrology Evidence Cards V1.3
+# Hydrology Evidence Cards V1.4
 
 Build a scientifically rigorous card that a researcher can understand before seeing any audit machinery. Do not write a generic literature summary or expose a wall of schema fields as the main reading experience.
 
@@ -23,7 +23,7 @@ The visible Markdown must let a researcher answer these questions in two minutes
 4. What is the source's real scientific contribution and practical value for the current research?
 5. What can and cannot be concluded, and what should be done next?
 
-It must also remain useful during a 20-minute close reading. A card that merely restates the abstract, lists keywords, or gives one sentence each for “method” and “result” fails even if its schema passes.
+It must also remain useful during a 20-minute close reading. A card that merely restates the abstract, lists keywords, or gives one sentence each for “method” and “result” fails even if its schema passes. A full-text card must reconstruct at least one complete evidence path: **a named input or observation → a named operation/model step → a named intermediate or output → a stated comparison or check → the resulting claim and its boundary**.
 
 For every claim of `reading_scope: full_text` or `partial_full_text`, the visible body must contain separately identifiable sections for the **research question, study object and boundary, data, method workflow, validation or comparison design, results, author interpretation, analyst assessment, reproducibility and conclusion boundary**. Write `not_reported`, `not_found_after_check`, `not_read` or `not_obtained` for a missing element and explain its consequence. Do not hide missing data behind “the authors conducted a case study” or “results show the method is effective.”
 
@@ -31,7 +31,9 @@ The data section must name, when the source reports them: source or acquisition 
 
 Write the paper's intellectual story first. Define technical terms in ordinary research language, connect methods to results, and explain why each major result matters. Put DOI, official source and Zotero links in a short source section.
 
-For a substantive journal article read from the full main text, an original-research L2 card should normally contain **6,000–10,000 Chinese characters of visible analysis**, excluding frontmatter, source links, calibration notes and machine audit. This is a depth target, not permission to pad: use the space to reconstruct the literature gap, evidence path, method logic, result chain, important figures/tables, contribution relative to prior approaches, uncertainty, reproducibility and concrete value for the current research. If the source is too short or simple to justify 6,000 characters, state why and stop rather than repeat content.
+For a substantive journal article read from the full main text, a full-text L1 analytical card normally needs **4,500–7,000 Chinese characters** and an original-research L2 card normally needs **6,000–10,000 Chinese characters** of visible analysis, excluding frontmatter, source links, calibration notes and machine audit. These are depth floors for normal research articles, not permission to pad. Use the space to reconstruct the literature gap, evidence path, method logic, result chain, important figures/tables, contribution relative to prior approaches, uncertainty, reproducibility and concrete value for the current research. Reviews and substantial investigation reports must be long enough to reconstruct their search/investigation and synthesis chain. Short notices, catalogue pages and policy announcements may remain short when the source genuinely contains no research design or results.
+
+Do not use stock filler such as “把上述输入按论文给出的规则转换为研究输出”, “该结果只在上述设定内成立”, or “这里真正需要回答的不是……”. Replace it with source-specific content. If the source text does not reveal the missing step, state exactly which step is unresolved and where it was searched.
 
 Do not leave raw `claim-json`, schema names, relation arrays, verification enums or identifier machinery expanded in the main article. Put calibration/manual-review notes and machine audit in two separate HTML `<details>` blocks without the `open` attribute, so both are closed by default in Obsidian reading view and GitHub. A reader must understand the paper without opening either block.
 

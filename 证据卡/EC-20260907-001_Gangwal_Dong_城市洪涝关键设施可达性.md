@@ -1,7 +1,7 @@
 ---
 card_schema: "evidence-card-v1.2"
 card_id: "EC-20260907-001"
-card_version: "1.3.0"
+card_version: "1.4.0"
 card_type: "source_evidence"
 artifact_type: "journal_article"
 evidence_roles: ["original_research", "method_validation", "risk_mapping"]
@@ -26,7 +26,7 @@ independence_group_ids: ["IG-GANGWAL-DONG-2022-HARRIS-FLOOD-ACCESS"]
 version_family_ids: ["VF-DOI-10.1016-J.RESS.2022.108555"]
 reading_scope: "partial_full_text"
 extraction_method: "ai_assisted"
-generator_or_pipeline_version: "hydrology-evidence-cards-v1.3"
+generator_or_pipeline_version: "hydrology-evidence-cards-v1.4-deep-rewrite"
 verified_claim_ids: []
 verified_by: ""
 verified_at: ""
@@ -101,7 +101,7 @@ recheck_trigger: "Complete human review before any claim becomes theme-bearing; 
 
 这些数据的证据属性不同。道路和设施是空间对象；监测站只直接反映有限位置的水位或淹没状态；未覆盖道路的失效时间由规则推演；1000次模拟共享同一城市、洪泛区和算法。因而模拟次数不能写成1000个独立洪水案例，派生的道路失效也不能统称为现场观测。
 
-## 方法是怎样一步步得到结果的
+## 全文证据链展开：方法是怎样一步步得到结果的
 
 ### 1. 建立道路—设施网络
 

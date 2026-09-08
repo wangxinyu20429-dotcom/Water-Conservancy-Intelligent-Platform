@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate evidence-card v1.3 structure and hard rules R01-R09."""
+"""Validate evidence-card v1.4 structure and hard rules R01-R09."""
 
 from __future__ import annotations
 
@@ -129,6 +129,14 @@ def has_heading(body: str, alternatives: list[str]) -> bool:
     return any(re.search(rf"(?m)^##+\s+.*{re.escape(term)}.*$", body) for term in alternatives)
 
 
+def section_text(body: str, alternatives: list[str]) -> str:
+    for term in alternatives:
+        match = re.search(rf"(?ms)^##\s+[^\n]*{re.escape(term)}[^\n]*\n(.*?)(?=^##\s+|\Z)", body)
+        if match:
+            return match.group(1)
+    return ""
+
+
 def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
     """R09: full/partial-text cards must reveal the scientific evidence path."""
     if meta.get("reading_scope") not in {"partial_full_text", "full_text", "mixed"}:
@@ -146,7 +154,7 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
             "综合结果": ["综合结果", "关键.*结果"],
             "偏倚与边界": ["偏倚", "证据边界", "结论边界"],
         }
-        minimum = 1400
+        minimum = 3000
     elif artifact in REPORT_ARTIFACTS:
         required = {
             "对象与时间线": ["对象与时间线", "事件.*时间线", "工程.*时间线"],
@@ -155,14 +163,14 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
             "事实与结果": ["确认.*事实", "关键数字", "结果"],
             "边界": ["结论边界", "证据边界", "使用边界"],
         }
-        minimum = 1200
+        minimum = 2600
     elif artifact in NORMATIVE_ARTIFACTS:
         required = {
             "读取范围": ["读取范围"],
             "可确认内容": ["可确认", "条款", "事实"],
             "科学边界": ["科学证据边界", "科学边界", "结论边界"],
         }
-        minimum = 450
+        minimum = 700
     else:
         required = {
             "研究问题": ["研究要解决什么问题", "研究问题"],
@@ -170,11 +178,13 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
             "数据": ["数据到底是什么", "研究数据", "数据来源"],
             "方法": ["方法是怎样", "研究方法", "方法流程"],
             "验证与比较": ["验证和比较", "验证与比较", "实验设计"],
+            "全文证据链": ["全文证据链展开"],
             "结果": ["关键.*结果", "研究结果"],
             "复现": ["复现"],
             "边界": ["结论边界", "使用边界"],
         }
-        minimum = 1800 if artifact in RESEARCH_ARTIFACTS else 1200
+        level = str(meta.get("completion_level", ""))
+        minimum = (6000 if level in {"L2", "L3"} else 3800) if artifact in RESEARCH_ARTIFACTS else 2800
     errors = []
     for label, terms in required.items():
         if not has_heading(body, terms):
@@ -182,10 +192,31 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
     visible_chars = len(re.sub(r"\s+", "", body))
     if visible_chars < minimum:
         errors.append(f"R09 visible scientific analysis is too short for {artifact or 'source'}: {visible_chars} < {minimum} non-space characters")
-    for label in ("数据", "方法", "结果"):
-        match = re.search(rf"(?ms)^##\s+[^\n]*{label}[^\n]*\n(.*?)(?=^##\s+|\Z)", body)
-        if match and len(re.sub(r"\s+", "", match.group(1))) < 80:
-            errors.append(f"R09 {label} section is empty or too shallow")
+    if not is_review and artifact not in REPORT_ARTIFACTS and artifact not in NORMATIVE_ARTIFACTS:
+        floors = {
+            "数据": (["数据到底是什么", "研究数据", "数据来源"], 300),
+            "方法": (["方法是怎样", "研究方法", "方法流程"], 150),
+            "验证": (["验证和比较", "验证与比较", "实验设计"], 150),
+            "结果": (["最关键的研究结果", "最关键的结果", "研究结果"], 150),
+            "全文证据链": (["全文证据链展开"], 700),
+        }
+        core_total = 0
+        for label, (terms, floor) in floors.items():
+            section = section_text(body, terms)
+            length = len(re.sub(r"\s+", "", section))
+            core_total += length
+            if section and length < floor:
+                errors.append(f"R09 {label} section is too shallow: {length} < {floor}")
+        if core_total < 1600:
+            errors.append(f"R09 data-method-validation-results-evidence-chain core is too shallow: {core_total} < 1600")
+        filler = [
+            "把上述输入按论文给出的规则转换为研究输出",
+            "该结果只在上述研究对象、输入、比较和模型设定内成立",
+            "这里真正需要回答的不是",
+        ]
+        for phrase in filler:
+            if phrase in body:
+                errors.append(f"R09 generic filler must be replaced with source-specific analysis: {phrase}")
     return errors
 
 

@@ -1,7 +1,7 @@
 interface:
   display_name: "水利科研证据卡"
-  short_description: "把 Zotero 文献写成人能直接读懂的科研证据卡"
+  short_description: "把 Zotero 文献写成深入、可读、可核验的科研证据卡"
   brand_color: "#176B87"
-  default_prompt: "Use $hydrology-evidence-cards to read a selected Zotero source and write a detailed human-readable research evidence card. Separately expose the research question, object and scope, observed/derived/simulated data, independent unit, input-to-output method chain, validation and comparisons, decisive results with denominators and uncertainty, author interpretation, reproducibility, research value, and conclusion boundaries. Never use an abstract paraphrase as a full-text card. For substantive full-text original research, normally write 6,000-10,000 visible Chinese characters without padding. Put calibration notes and Claim audit fields in separate default-collapsed details blocks, validate R01-R09, and link only verified claims to a Decision/Synthesis card when needed."
+  default_prompt: "Use $hydrology-evidence-cards to read a selected Zotero source and write a deep, human-readable research evidence card. Reconstruct a named input-to-transformation-to-validation-to-result evidence path, not an abstract paraphrase or generic filler. Separately expose the research question, object and scope, observed/derived/simulated data, independent unit, method chain, validation and comparisons, decisive results with denominators and uncertainty, author interpretation, reproducibility, research value, and conclusion boundaries. For substantive full-text research, normally write 4,500-7,000 visible Chinese characters for L1 and 6,000-10,000 for L2 without padding. Put calibration notes and Claim audit fields in separate default-collapsed details blocks, validate R01-R09, and link only verified claims to a Decision/Synthesis card when needed."
 policy:
   allow_implicit_invocation: true

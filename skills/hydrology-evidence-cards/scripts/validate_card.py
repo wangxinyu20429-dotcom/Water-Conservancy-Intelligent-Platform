@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate evidence-card v1.2 structure and hard rules R01-R09."""
+"""Validate evidence-card v1.3 structure and hard rules R01-R09."""
 
 from __future__ import annotations
 

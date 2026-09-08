@@ -4,14 +4,14 @@
 
 ## Zotero 到证据卡 Skill
 
-仓库包含可安装的 [`hydrology-evidence-cards`](skills/hydrology-evidence-cards/SKILL.md) Skill。它从本机 Zotero 只读取得指定来源和可用全文，按 Source—Claim—Decision 三层建立证据：来源版本只登记一次，Cxx 声明带全局 ID 和原文定位，平台判断写入第九张决策卡。Skill 支持 L0—L3、八类来源入口、公共水利情境、五类方法模块、AI 溯源、R01—R08 校验和关系图导出。使用入口见[证据卡科学架构与 Zotero Skill 使用 V1.2](docs/证据卡规范/07_证据卡科学架构与Zotero_Skill使用_V1.2.md)。
+仓库包含可安装的 [`hydrology-evidence-cards`](skills/hydrology-evidence-cards/SKILL.md) Skill。它从本机 Zotero 只读取得指定来源和可用全文，按 Source—Claim—Decision 三层建立证据：来源版本只登记一次，Cxx 声明带全局 ID 和原文定位，平台判断写入第九张决策卡。V1.3新增“人能读懂的科学核心”硬门槛：凡声称读取部分/完整正文，必须分别写明研究问题、对象、数据、方法链、验证、结果、复现和边界；结构检查新增R09，拦截只有摘要复述或空标题的卡片。详细合同见[human-readable-core.md](skills/hydrology-evidence-cards/references/human-readable-core.md)，原V1.2架构说明仍见[证据卡科学架构与 Zotero Skill 使用 V1.2](docs/证据卡规范/07_证据卡科学架构与Zotero_Skill使用_V1.2.md)。
 ## 证据卡到主题 Skill
 
 [`hydrology-theme-synthesis`](skills/hydrology-theme-synthesis/SKILL.md) 把选定证据卡中的 L2/L3、已核 Claim 组织成主题问题、边界、比较框架、发展脉络和研究现状；再分开判断来源的科学作用与前沿关注优先级，并把承重缺口反馈到原证据卡补核。新近性占25%、经核的学科归一期刊信号占15%，两项只影响“先读、先核、先跟踪”的顺序，不改变 Claim 可信度。入口见[十二步闭环工作流](docs/主题规范/02_证据卡到主题闭环工作流_V1.0.md)，成品结构见[水利科研主题模板](docs/主题模板/01_水利科研主题模板_V1.0.md)。
 
 ## 科研平台集合真实运行成果
 
-Zotero“科研平台”集合已经完成一次全量机器辅助初读：42个唯一来源各有一张独立证据卡，并由主题Skill形成5个候选主题。当前共有41张L1筛查卡和1张L2详细草稿；全部尚待人工源文复核，因此候选主题用于确定精读顺序和补证据任务，不能直接作为论文结论或创新性声明。
+Zotero“科研平台”集合42个唯一来源各有一张独立证据卡，并由主题Skill形成5个候选主题。2026-09-08已重写全部证据卡：41张L1卡不再使用简短筛选摘要，而是明确列出研究对象、数据层、独立单位、方法步骤、验证、主要结果、复现条件和边界；1张L2详细草稿也补上独立的数据总表和验证层级。全部仍待课题组成员逐表逐图复核，因此候选主题用于确定精读顺序和补证据任务，不能直接作为论文结论或创新性声明。
 
 - [42张证据卡总索引](证据卡/科研平台集合_20260907/README.md)
 - [5个候选主题与主题关系](主题/候选主题_科研平台集合_20260907/README.md)
@@ -58,7 +58,7 @@ GitHub不保存项目原始数据、文献全文、Zotero数据库、凭据或�
 | --- | --- | --- |
 | [T01](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/1) | 建立OneDrive目录并确认Zotero、Obsidian与GitHub入口 | M0 |
 | [T02](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/2) | 把一份真实材料收进Zotero并登记文献链接 | M0 |
-| [T03](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/3) | 为唯一来源版本建立真实 L0—L3 卡、Cxx 定位、人审和 R01—R08 结果 | M1 |
+| [T03](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/3) | 为唯一来源版本建立真实 L0—L3 卡、Cxx 定位、人审和 R01—R09 结果 | M1 |
 | [T04](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/4) | 用主题Skill完成Claim准入、比较框架、发展脉络、研究现状和关键文献排序 | M1 |
 | [T05](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/5) | 用主题反推原卡承重缺口，按三门触发最小补核并重算主题 | M1 |
 | [T06](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/6) | 从已核主题声明生成机会信号和写作接口，不自动宣称新颖性 | M1 |

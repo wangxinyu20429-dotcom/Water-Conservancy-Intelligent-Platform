@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Meaningful invariant tests for evidence-card hard rules R01-R08."""
+"""Meaningful invariant tests for evidence-card hard rules R01-R09."""
 
 from __future__ import annotations
 
@@ -56,7 +56,18 @@ def valid_claim() -> dict[str, object]:
 
 
 def source_text(claim: dict[str, object], **meta: object) -> str:
-    return frontmatter(**meta) + "\n\n~~~claim-json\n" + json.dumps(claim, ensure_ascii=False, indent=2) + "\n~~~\n"
+    paragraph = "这部分把研究对象、输入资料、处理步骤、比较条件、输出指标和限制联系起来，所有未报告内容均明确记录，不用一般背景替代论文信息。" * 8
+    human = "\n\n".join([
+        "## 研究要解决什么问题\n" + paragraph,
+        "## 研究对象与边界\n" + paragraph,
+        "## 数据到底是什么\n" + paragraph,
+        "## 方法是怎样一步步得到结果的\n" + paragraph,
+        "## 验证和比较是否站得住\n" + paragraph,
+        "## 最关键的研究结果\n" + paragraph,
+        "## 复现需要什么\n" + paragraph,
+        "## 结论边界\n" + paragraph,
+    ])
+    return frontmatter(**meta) + "\n\n" + human + "\n\n~~~claim-json\n" + json.dumps(claim, ensure_ascii=False, indent=2) + "\n~~~\n"
 
 
 def expect(name: str, text: str, expected_code: str | None) -> None:
@@ -91,6 +102,9 @@ def main() -> None:
     expect("R07 conflict blocks approval", source_text(claim, workflow_status="approved", load_bearing_conflict=True, unresolved_conflict_ids=["CONFLICT-1"]), "R07")
 
     expect("R08 AI provenance", source_text(claim, extraction_method="ai_assisted", generator_or_pipeline_version="", source_snapshot_hash="", human_review_status="not_started", human_reviewer="", verified_claim_ids=[]), "R08")
+
+    shallow = frontmatter(completion_level="L1", workflow_status="screened", verification_readiness="clue_only", applicability="transfer_check_required", verified_claim_ids=[], reading_scope="full_text") + "\n\n## 研究结果\n方法有效。\n"
+    expect("R09 shallow full-text card blocked", shallow, "R09")
 
     decision = {
         "decision_id": "DEC-1", "research_question_ids": ["RQ1"], "included_claims": ["EC-TEST-001-C01"], "excluded_claims": [],

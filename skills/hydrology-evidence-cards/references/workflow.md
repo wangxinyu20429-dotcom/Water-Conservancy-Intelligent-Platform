@@ -27,11 +27,11 @@ Example:
 
 ## 5. Read only what supports the current level
 
-For L0, use identity records. For L1, read the abstract or executive material and label it honestly. For L2, open the exact pages, tables, figures, clauses, rows, metadata or logs needed for each decisive claim. For L3, follow the stated minimum path through methods, supplements, data, code, versions or runs and stop at the predeclared condition.
+For L0, use identity records. For abstract-only L1, read the abstract or executive material and label it honestly. A partial/full-text L1 is an analytical screening card: it must still expose the actual object, data, method, validation, results and missing fields using references/human-readable-core.md. For L2, open the exact pages, tables, figures, clauses, rows, metadata or logs needed for each decisive claim. For L3, follow the stated minimum path through methods, supplements, data, code, versions or runs and stop at the predeclared condition.
 
 ## 6. Write the human analysis
 
-Write the visible card before the audit objects. Lead with a one-sentence takeaway, then reconstruct the literature gap, research questions, study design, data-generation path, method in plain scientific language, three to five decisive findings, important figures/tables, contribution, evidence strength, reproducibility, relevance to the current work and conclusion boundaries. Put numbers in small tables where that improves interpretation. A reader must understand the source without reading any identifier or schema field.
+Write the visible card before the audit objects and follow references/human-readable-core.md. Lead with a one-sentence takeaway, then reconstruct the literature gap, research questions, study design, data-generation path, method in plain scientific language, validation/comparison logic, three to five decisive findings, important figures/tables, contribution, evidence strength, reproducibility, relevance to the current work and conclusion boundaries. Put numbers in small tables where that improves interpretation. A reader must understand the source without reading any identifier or schema field. If data, method or result information is missing, state the missing field and how it limits the conclusion; never replace it with a generic summary sentence.
 
 For a substantive full-main-text original research paper, target 6,000–10,000 Chinese characters in the visible analysis. Count only the research narrative, not frontmatter, links, repeated metadata, calibration notes or machine fields. When the source does not contain enough substance, write a shorter card and state the reason; never expand by paraphrasing the same conclusion repeatedly.
 

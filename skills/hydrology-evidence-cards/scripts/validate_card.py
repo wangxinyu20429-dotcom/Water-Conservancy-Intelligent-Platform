@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate evidence-card v1.2 structure and hard rules R01-R08."""
+"""Validate evidence-card v1.2 structure and hard rules R01-R09."""
 
 from __future__ import annotations
 
@@ -60,6 +60,10 @@ SUPPORT_STATES = {"supported", "partially_supported", "not_supported", "contradi
 INFERENCE_TYPES = {"descriptive", "comparative", "association", "causal", "prediction", "mechanism", "transferability", "normative", "implementation"}
 VERIFICATION_STATES = {"not_checked", "metadata_checked", "partially_source_checked", "source_checked", "independently_reproduced"}
 
+RESEARCH_ARTIFACTS = {"journal_article", "conference_paper", "thesis", "preprint"}
+REPORT_ARTIFACTS = {"engineering_report", "feasibility_report", "design_report", "acceptance_report", "operation_report", "incident_report", "investigation_report"}
+NORMATIVE_ARTIFACTS = {"standard", "guideline", "regulation", "policy", "official_interpretation", "webpage"}
+
 
 def parse_scalar(raw: str) -> Any:
     value = raw.strip()
@@ -111,6 +115,78 @@ def nonempty_dict_fields(value: Any, fields: list[str]) -> bool:
 
 def list_value(value: Any) -> list[Any]:
     return value if isinstance(value, list) else []
+
+
+def visible_body(text: str) -> str:
+    """Return reader-facing prose, excluding flat frontmatter and closed audit blocks."""
+    body = text.split("---", 2)[2] if text.startswith("---") and len(text.split("---", 2)) == 3 else text
+    body = re.sub(r"(?is)<details\b[^>]*>.*?</details>", "", body)
+    body = re.sub(r"(?ms)^(```|~~~)[a-zA-Z0-9_-]*\s*\n.*?^\1\s*$", "", body)
+    return body
+
+
+def has_heading(body: str, alternatives: list[str]) -> bool:
+    return any(re.search(rf"(?m)^##+\s+.*{re.escape(term)}.*$", body) for term in alternatives)
+
+
+def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
+    """R09: full/partial-text cards must reveal the scientific evidence path."""
+    if meta.get("reading_scope") not in {"partial_full_text", "full_text", "mixed"}:
+        return []
+    body = visible_body(text)
+    artifact = str(meta.get("artifact_type", ""))
+    roles = {str(x) for x in list_value(meta.get("evidence_roles"))}
+    is_review = artifact in {"review", "systematic_review", "book_section"} or "review_synthesis" in roles
+    if is_review:
+        required = {
+            "综述问题与范围": ["综述问题", "综述范围"],
+            "检索与纳入": ["检索", "纳入"],
+            "纳入证据": ["纳入证据", "资料构成"],
+            "综合方法": ["综合方法", "分类方法", "作者怎样分类或综合"],
+            "综合结果": ["综合结果", "关键.*结果"],
+            "偏倚与边界": ["偏倚", "证据边界", "结论边界"],
+        }
+        minimum = 1400
+    elif artifact in REPORT_ARTIFACTS:
+        required = {
+            "对象与时间线": ["对象与时间线", "事件.*时间线", "工程.*时间线"],
+            "材料与数据": ["材料和数据", "材料与数据", "数据来源"],
+            "方法": ["调查.*方法", "评估.*方法", "方法"],
+            "事实与结果": ["确认.*事实", "关键数字", "结果"],
+            "边界": ["结论边界", "证据边界", "使用边界"],
+        }
+        minimum = 1200
+    elif artifact in NORMATIVE_ARTIFACTS:
+        required = {
+            "读取范围": ["读取范围"],
+            "可确认内容": ["可确认", "条款", "事实"],
+            "科学边界": ["科学证据边界", "科学边界", "结论边界"],
+        }
+        minimum = 450
+    else:
+        required = {
+            "研究问题": ["研究要解决什么问题", "研究问题"],
+            "研究对象": ["研究对象"],
+            "数据": ["数据到底是什么", "研究数据", "数据来源"],
+            "方法": ["方法是怎样", "研究方法", "方法流程"],
+            "验证与比较": ["验证和比较", "验证与比较", "实验设计"],
+            "结果": ["关键.*结果", "研究结果"],
+            "复现": ["复现"],
+            "边界": ["结论边界", "使用边界"],
+        }
+        minimum = 1800 if artifact in RESEARCH_ARTIFACTS else 1200
+    errors = []
+    for label, terms in required.items():
+        if not has_heading(body, terms):
+            errors.append(f"R09 partial/full-text card lacks visible {label} section")
+    visible_chars = len(re.sub(r"\s+", "", body))
+    if visible_chars < minimum:
+        errors.append(f"R09 visible scientific analysis is too short for {artifact or 'source'}: {visible_chars} < {minimum} non-space characters")
+    for label in ("数据", "方法", "结果"):
+        match = re.search(rf"(?ms)^##\s+[^\n]*{label}[^\n]*\n(.*?)(?=^##\s+|\Z)", body)
+        if match and len(re.sub(r"\s+", "", match.group(1))) < 80:
+            errors.append(f"R09 {label} section is empty or too shallow")
+    return errors
 
 
 def validate_claim(claim: dict[str, Any], final: bool) -> list[str]:
@@ -235,6 +311,8 @@ def validate_source(meta: dict[str, Any], text: str, final: bool) -> tuple[list[
             errors.append("R08 AI extraction requires completed human review")
         if final and not verified:
             errors.append("R08 AI extraction requires verified_claim_ids")
+
+    errors.extend(validate_human_core(meta, text))
 
     if final:
         for key in ["card_id", "source_work_id", "source_manifestation_id", "source_version", "source_provenance", "acquired_via", "acquired_at"]:
@@ -414,7 +492,7 @@ def main() -> None:
         print(f"ERROR: {item}")
     if errors:
         raise SystemExit(1)
-    print("PASS: R01-R08 structural checks completed; scientific validity still requires source review")
+    print("PASS: R01-R09 structural and readable-core checks completed; scientific validity still requires source review")
 
 
 if __name__ == "__main__":

@@ -1,9 +1,9 @@
 ---
 name: hydrology-evidence-cards
-description: Read a user-specified Zotero source and produce a human-readable water-research evidence card that explains what the source studied, how it worked, what it found, why it matters, and where its conclusions stop. Keep source-located Claim objects in a default-collapsed audit layer for validation and later synthesis. Use for Zotero-to-Obsidian evidence work, not literature discovery or unsupported novelty generation.
+description: Read a user-specified Zotero source and produce a source-grounded, human-readable water-research evidence card. Reconstruct the research question, study objects, actual data, method and validation chain, decisive results, contribution, reproducibility and conclusion boundaries; never replace them with a shallow abstract paraphrase. Keep machine audit fields default-collapsed. Use for Zotero-to-Obsidian evidence work, source-card rewriting and evidence preparation for theme synthesis.
 ---
 
-# Hydrology Evidence Cards V1.2
+# Hydrology Evidence Cards V1.3
 
 Build a scientifically rigorous card that a researcher can understand before seeing any audit machinery. Do not write a generic literature summary or expose a wall of schema fields as the main reading experience.
 
@@ -23,6 +23,12 @@ The visible Markdown must let a researcher answer these questions in two minutes
 4. What is the source's real scientific contribution and practical value for the current research?
 5. What can and cannot be concluded, and what should be done next?
 
+It must also remain useful during a 20-minute close reading. A card that merely restates the abstract, lists keywords, or gives one sentence each for “method” and “result” fails even if its schema passes.
+
+For every claim of `reading_scope: full_text` or `partial_full_text`, the visible body must contain separately identifiable sections for the **research question, study object and boundary, data, method workflow, validation or comparison design, results, author interpretation, analyst assessment, reproducibility and conclusion boundary**. Write `not_reported`, `not_found_after_check`, `not_read` or `not_obtained` for a missing element and explain its consequence. Do not hide missing data behind “the authors conducted a case study” or “results show the method is effective.”
+
+The data section must name, when the source reports them: source or acquisition route, place, period, sample or independent unit, spatial and temporal resolution, variables, labels or outcomes, preprocessing, calibration/validation/test split, and accessibility. The method section must explain the input → transformation/model → comparison/validation → output chain and identify assumptions or parameter sources. The results section must preserve direction, quantity, unit, denominator, comparator, uncertainty and locator for each decisive result. If the source reports no uncertainty, say so.
+
 Write the paper's intellectual story first. Define technical terms in ordinary research language, connect methods to results, and explain why each major result matters. Put DOI, official source and Zotero links in a short source section.
 
 For a substantive journal article read from the full main text, an original-research L2 card should normally contain **6,000–10,000 Chinese characters of visible analysis**, excluding frontmatter, source links, calibration notes and machine audit. This is a depth target, not permission to pad: use the space to reconstruct the literature gap, evidence path, method logic, result chain, important figures/tables, contribution relative to prior approaches, uncertainty, reproducibility and concrete value for the current research. If the source is too short or simple to justify 6,000 characters, state why and stop rather than repeat content.
@@ -38,9 +44,10 @@ Conflicts and missing fields are quality-control information, not the narrative 
 3. Read references/source-classification.md and choose one source profile plus every applicable evidence role.
 4. For Zotero input, read references/zotero-access.md.
 5. Read references/workflow.md.
-6. Create a card with scripts/new_card.py or assemble it from assets/base, one assets/templates profile, and conditional assets/modules.
-7. Run scripts/validate_card.py in draft mode during work and final mode before handoff.
-8. Reopen every decisive locator and complete the manual scientific review. A script PASS is not scientific approval.
+6. Read references/human-readable-core.md and use its source-type contract.
+7. Create a card with scripts/new_card.py or assemble it from assets/base, one assets/templates profile, and conditional assets/modules.
+8. Run scripts/validate_card.py in draft mode during work and final mode before handoff.
+9. Reopen every decisive locator and complete the manual scientific review. A script PASS is not scientific approval.
 
 ## Object and granularity rules
 
@@ -56,7 +63,7 @@ Conflicts and missing fields are quality-control information, not the narrative 
 | Level | Purpose | Minimum content | Permitted use |
 | --- | --- | --- | --- |
 | L0 | identity, deduplication and version registration | exact source identity, manifestation, acquisition and access state | inventory only |
-| L1 | rapid screening | current question, potential role, result clue and first boundary | discovery and prioritisation only |
+| L1 | analytical screening | abstract-level cards may stay short; any card claiming partial/full-text reading must expose research object, data, method, result and boundary in separate sections and state unresolved fields | discovery and prioritisation only |
 | L2 | usable evidence | a complete human-readable analysis plus at least one located and source-checked audit claim with scope, support boundary and verification record | may enter Decision/Synthesis |
 | L3 | full audit | all decisive claims, triggered method modules, conflicts, supplementary or run checks, independent review | high-impact, disputed or reproduction decisions |
 
@@ -114,7 +121,7 @@ Conditional modules follow the inference and method, not the publication format.
 
 Use only: not_applicable, not_obtained, not_read, not_reported, not_found_after_check, conflict_pending. Never fill a gap from general knowledge or a similar source.
 
-AI-assisted or automated extraction must record extraction_method, generator_or_pipeline_version, source_snapshot_hash, human_review_status, human_reviewer and verified_claim_ids. AI extraction confidence, scientific evidence certainty and applicability to the current decision are separate concepts.
+AI-assisted or automated extraction must record extraction_method, generator_or_pipeline_version, source_snapshot_hash, human_review_status, human_reviewer and verified_claim_ids. AI extraction confidence, scientific evidence certainty and applicability to the current decision are separate concepts. Never call a batch card `full_text` merely because an index returned many characters: confirm that the main text contains usable methods and results. If only a landing page, abstract, references or OCR fragments were usable, record the narrower scope.
 
 ## Manual scientific review
 

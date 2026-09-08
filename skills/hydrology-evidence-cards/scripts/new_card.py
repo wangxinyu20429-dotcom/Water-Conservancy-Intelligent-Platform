@@ -110,13 +110,16 @@ def build_source(args: argparse.Namespace) -> str:
         chunks.append(read(ROOT / "assets" / "base" / "level-l1.md"))
     if args.level in {"L2", "L3"}:
         profile = body_without_frontmatter(read(ROOT / "assets" / "templates" / profile_file))
-        additions = [profile]
+        machine_additions: list[str] = []
         if args.water_context:
-            additions.append(read(ROOT / "assets" / "modules" / "water-context.md").strip())
+            machine_additions.append(read(ROOT / "assets" / "modules" / "water-context.md").strip())
         for module in args.module:
-            additions.append(read(ROOT / "assets" / "modules" / MODULES[module]).strip())
+            machine_additions.append(read(ROOT / "assets" / "modules" / MODULES[module]).strip())
         l2 = read(ROOT / "assets" / "base" / "level-l2.md")
-        chunks.append(l2.replace("{{SOURCE_TYPE_MODULE}}", "\n\n".join(additions)))
+        chunks.append(
+            l2.replace("{{SOURCE_TYPE_HUMAN_MODULE}}", profile)
+            .replace("{{MACHINE_MODULES_CONTENT}}", "\n\n".join(machine_additions))
+        )
     if args.level == "L3":
         module_note = "已启用模块：" + ("、".join(args.module) if args.module else "无；请说明为何不需要条件方法模块")
         chunks.append(read(ROOT / "assets" / "base" / "level-l3.md").replace("{{METHOD_MODULES_CONTENT}}", module_note))
@@ -180,4 +183,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -29,13 +29,19 @@ Example:
 
 For L0, use identity records. For L1, read the abstract or executive material and label it honestly. For L2, open the exact pages, tables, figures, clauses, rows, metadata or logs needed for each decisive claim. For L3, follow the stated minimum path through methods, supplements, data, code, versions or runs and stop at the predeclared condition.
 
-## 6. Write claims
+## 6. Write the human analysis
 
-Create one claim-json block per proposition. Use a globally unique claim_id. Record source fact, evidence origin, exact scope, locator, permitted inference, support, non-support, interpretations, relations, independence groups and verification. Add the method_requirements demanded by the inference type.
+Write the visible card before the audit objects. Lead with a one-sentence takeaway, then reconstruct the literature gap, research questions, study design, data-generation path, method in plain scientific language, three to five decisive findings, important figures/tables, contribution, evidence strength, reproducibility, relevance to the current work and conclusion boundaries. Put numbers in small tables where that improves interpretation. A reader must understand the source without reading any identifier or schema field.
 
-Do not cap the complete record at three claims. Only the quick decision summary is limited to the most decision-relevant three.
+For a substantive full-main-text original research paper, target 6,000–10,000 Chinese characters in the visible analysis. Count only the research narrative, not frontmatter, links, repeated metadata, calibration notes or machine fields. When the source does not contain enough substance, write a shorter card and state the reason; never expand by paraphrasing the same conclusion repeatedly.
 
-## 7. Validate and review
+## 7. Build the default-collapsed claim audit
+
+After the human analysis is coherent, create one claim-json block per proposition. Use a globally unique claim_id. Record source fact, evidence origin, exact scope, locator, permitted inference, support, non-support, interpretations, relations, independence groups and verification. Add the method_requirements demanded by the inference type.
+
+Put calibration/manual-review notes in one `<details>` block and all machine-only objects in a second `<details>` block. Omit the `open` attribute so both are closed by default. Do not cap the complete record at three claims. Visible findings should normally focus on the three to five result groups needed to understand the source; the audit claim count may be larger because numbers and boundaries remain atomic.
+
+## 8. Validate and review
 
 During drafting:
 
@@ -45,9 +51,9 @@ Before handoff:
 
     python scripts/validate_card.py CARD.md --mode final --index-root VAULT_OR_REPOSITORY
 
-Then reopen every decisive locator and perform the manual scientific review in SKILL.md. Fix R01-R08 failures; do not waive them with prose.
+Then reopen every decisive locator and perform the manual scientific review in SKILL.md. Confirm that every visible number and conclusion maps to a claim in the collapsed audit block. Check that both `<details>` blocks are closed by default and that the expanded main text contains no claim JSON. Fix R01-R08 failures; do not waive them with prose.
 
-## 8. Synthesize decisions
+## 9. Synthesize decisions
 
 Only L2 or L3 claims may enter a Decision/Synthesis card. Create it with type decision-synthesis, list included and excluded claim IDs, group dependence and versions, expose conflicts, describe coverage and transferability, and record the six-dimension evidence profile with basis claim IDs.
 
@@ -55,13 +61,12 @@ Only L2 or L3 claims may enter a Decision/Synthesis card. Create it with type de
 
 An unresolved load-bearing conflict blocks approved status. The decision card must say what is supported, what remains unsupported and what evidence would change the decision.
 
-## 9. Export the relation graph
+## 10. Export the relation graph
 
     python scripts/export_graph.py VAULT_OR_REPOSITORY --output evidence-graph.json
 
 Unresolved edges mean a referenced Source, Claim or Decision object is absent from the scanned root. The graph is a derived view and never becomes a second source of scientific facts.
 
-## 10. Store and synchronize
+## 11. Store and synchronize
 
 Keep one formal Markdown per source manifestation and one per decision. Commit cards, rules, manifests and graph views to Git. Keep full text, Zotero databases, credentials, raw data, restricted reports, caches and run outputs in their authorised systems.
-

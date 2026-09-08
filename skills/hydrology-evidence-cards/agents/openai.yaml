@@ -1,7 +1,7 @@
 interface:
   display_name: "水利科研证据卡"
-  short_description: "从 Zotero 构建 Source—Claim—Decision 科研证据链"
+  short_description: "把 Zotero 文献写成人能直接读懂的科研证据卡"
   brand_color: "#176B87"
-  default_prompt: "Use $hydrology-evidence-cards to read a selected Zotero source, create one versioned Source card with located Claim objects, validate R01-R08, and link verified claims to a Decision/Synthesis card when needed."
+  default_prompt: "Use $hydrology-evidence-cards to read a selected Zotero source and write a detailed human-readable research evidence card that reconstructs the problem, evidence path, method, key results, figures, contribution, limits, reproducibility, and research value. For substantive full-text original research, normally write 6,000-10,000 visible Chinese characters without padding. Put calibration notes and Claim audit fields in separate default-collapsed details blocks, validate R01-R08, and link only verified claims to a Decision/Synthesis card when needed."
 policy:
   allow_implicit_invocation: true

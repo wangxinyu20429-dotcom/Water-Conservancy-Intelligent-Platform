@@ -33,7 +33,7 @@ For L0, use identity records. For abstract-only L1, read the abstract or executi
 
 Write the visible card before the audit objects and follow references/human-readable-core.md. Lead with a one-sentence takeaway, then reconstruct the literature gap, research questions, study design, data-generation path, method in plain scientific language, validation/comparison logic, three to five decisive findings, important figures/tables, contribution, evidence strength, relevance to the current work and conclusion boundaries. Put numbers in small tables where that improves interpretation. A reader must understand the source without reading any identifier or schema field. If data, method or result information is missing, state the missing field and how it limits the conclusion; never replace it with a generic summary sentence.
 
-For a substantive source actually read as full or partial main text, require at least 5,000 non-whitespace characters of source-grounded card body after frontmatter. At L1, at least 3,000 characters must be visible scientific narrative; at L2/L3, at least 6,000 visible characters are required. Rich original research should normally reach 5,000–7,500 visible characters at L1. Include an identifiable evidence chain joining named inputs, transformations, intermediate outputs, checks, results and boundaries; it need not use fixed headings. Do not count repeated metadata, copied references, raw OCR, generic background or paraphrases of the same conclusion. When the source is only a short notice, catalogue page or policy announcement, record the narrower reading scope and source-level reason instead of manufacturing length. Do not add a universal reproduction section.
+For a substantive source actually read as full or partial main text, require at least 5,000 non-whitespace characters in the visible L1 scientific narrative and at least 6,000 at L2/L3. Frontmatter, source-link lists, bibliography, calibration notes, machine fields and every default-collapsed `<details>` block are excluded from the count. Rich original research should normally reach 5,000–7,500 visible characters at L1. Include an identifiable evidence chain joining named inputs, transformations, intermediate outputs, checks, results and boundaries; it need not use fixed headings. Do not count repeated metadata, copied references, raw OCR, generic background or paraphrases of the same conclusion. When the source is only a short notice, catalogue page or policy announcement, record the narrower reading scope and source-level reason instead of manufacturing length. Do not add a universal reproduction section.
 
 ## 7. Build the default-collapsed claim audit
 
@@ -50,6 +50,10 @@ During drafting:
 Before handoff:
 
     python scripts/validate_card.py CARD.md --mode final --index-root VAULT_OR_REPOSITORY
+
+For a multi-card batch, also reject reused reader-facing paragraphs and long template sentences:
+
+    python scripts/validate_batch.py BATCH_OR_REPOSITORY_ROOT --mode draft
 
 Then reopen every decisive locator and perform the manual scientific review in SKILL.md. Confirm that every visible number and conclusion maps to a claim in the collapsed audit block. Check that both `<details>` blocks are closed by default and that the expanded main text contains no claim JSON. Fix R01-R08 failures; do not waive them with prose.
 

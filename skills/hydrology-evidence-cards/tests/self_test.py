@@ -16,7 +16,7 @@ from validate_card import validate_text  # noqa: E402
 
 def frontmatter(**overrides: object) -> str:
     data: dict[str, object] = {
-        "card_schema": "evidence-card-v1.2", "card_id": "EC-TEST-001", "card_version": "1.6.0",
+        "card_schema": "evidence-card-v1.2", "card_id": "EC-TEST-001", "card_version": "1.7.0",
         "card_type": "source_evidence", "artifact_type": "journal_article", "evidence_roles": ["original_research"],
         "workflow_status": "source_checked", "completion_level": "L2", "source_work_id": "WORK-1",
         "source_manifestation_id": "SRC-1", "source_version": "v1", "source_snapshot_hash": "sha256:test",
@@ -106,6 +106,22 @@ def main() -> None:
     shallow = frontmatter(completion_level="L1", workflow_status="screened", verification_readiness="clue_only", applicability="transfer_check_required", verified_claim_ids=[], reading_scope="full_text") + "\n\n## 研究结果\n方法有效。\n"
     expect("R09 shallow full-text card blocked", shallow, "R09")
 
+    folded_padding = shallow.replace(
+        "\n\n## 研究结果\n方法有效。\n",
+        "\n\n## 研究问题\n问题。\n## 研究对象\n对象。\n## 数据与证据材料\n数据。\n"
+        "## 研究设计与方法链\n方法。\n## 验证与比较\n验证。\n## 研究结果\n结果。\n## 证据边界\n边界。\n"
+        "<details><summary>机器审计</summary>" + ("折叠字段" * 4000) + "</details>\n",
+    )
+    expect("R09 folded audit cannot satisfy visible length", folded_padding, "R09")
+
+    link_padding = shallow.replace(
+        "\n\n## 研究结果\n方法有效。\n",
+        "\n\n## 研究问题\n问题。\n## 研究对象\n对象。\n## 数据与证据材料\n数据。\n"
+        "## 研究设计与方法链\n方法。\n## 验证与比较\n验证。\n## 研究结果\n结果。\n## 证据边界\n边界。\n"
+        "## 文献信息与原文入口\n" + ("[原文链接](https://example.org/source)" * 2000) + "\n",
+    )
+    expect("R09 source-link list cannot satisfy visible length", link_padding, "R09")
+
     filler = source_text(claim).replace("测试研究以A流域", "把上述输入按论文给出的规则转换为研究输出。测试研究以A流域", 1)
     expect("R09 generic filler blocked", filler, "R09")
 
@@ -118,7 +134,7 @@ def main() -> None:
         "remaining_evidence_gap": "external validation", "next_update_trigger": "new independent study",
     }
     decision_meta = "\n".join([
-        "---", 'card_schema: "evidence-card-v1.2"', 'card_id: "DS-1"', 'card_version: "1.6.0"', 'card_type: "decision_synthesis"',
+        "---", 'card_schema: "evidence-card-v1.2"', 'card_id: "DS-1"', 'card_version: "1.7.0"', 'card_type: "decision_synthesis"',
         'workflow_status: "approved"', 'completion_level: "L2"', 'decision_id: "DEC-1"', 'research_question_ids: ["RQ1"]',
         'as_of_date: "2026-09-04"', 'decision_owner: "tester"', 'load_bearing_conflict: false', 'unresolved_conflict_ids: []',
         'included_claim_ids: ["EC-TEST-001-C01"]', 'excluded_claim_ids: []', 'independence_group_ids: ["DATA-1"]', 'version_family_ids: []',

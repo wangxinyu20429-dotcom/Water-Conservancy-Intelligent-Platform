@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble a standalone v1.4 source or platform decision evidence card."""
+"""Assemble a standalone v1.7 source or platform decision evidence card."""
 
 from __future__ import annotations
 
@@ -167,7 +167,7 @@ def main() -> None:
     parser.add_argument("--decision-id")
     parser.add_argument("--reading-scope")
     parser.add_argument("--extraction-method", choices=["human", "ai_assisted", "automated"], default="ai_assisted")
-    parser.add_argument("--generator-version", default="hydrology-evidence-cards-v1.4")
+    parser.add_argument("--generator-version", default="hydrology-evidence-cards-v1.7")
     parser.add_argument("--confidentiality", default="internal")
     parser.add_argument("--recheck-trigger")
     parser.add_argument("--as-of-date")

@@ -1,7 +1,7 @@
 ---
 card_schema: "evidence-card-v1.2"
 card_id: "{{CARD_ID}}"
-card_version: "1.6.0"
+card_version: "1.7.0"
 card_type: "decision_synthesis"
 artifact_type: "platform_synthesis"
 workflow_status: "draft"

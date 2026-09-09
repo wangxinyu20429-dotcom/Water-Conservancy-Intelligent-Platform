@@ -1,7 +1,7 @@
 ---
 card_schema: "evidence-card-v1.2"
 card_id: "EC-20260907-001"
-card_version: "1.5.0"
+card_version: "1.6.0"
 card_type: "source_evidence"
 artifact_type: "journal_article"
 evidence_roles: ["original_research", "method_validation", "risk_mapping"]
@@ -26,7 +26,7 @@ independence_group_ids: ["IG-GANGWAL-DONG-2022-HARRIS-FLOOD-ACCESS"]
 version_family_ids: ["VF-DOI-10.1016-J.RESS.2022.108555"]
 reading_scope: "partial_full_text"
 extraction_method: "ai_assisted"
-generator_or_pipeline_version: "hydrology-evidence-cards-v1.5-source-specific"
+generator_or_pipeline_version: "hydrology-evidence-cards-v1.6-deep-source-specific"
 verified_claim_ids: []
 verified_by: ""
 verified_at: ""

@@ -16,7 +16,7 @@ from validate_card import validate_text  # noqa: E402
 
 def frontmatter(**overrides: object) -> str:
     data: dict[str, object] = {
-        "card_schema": "evidence-card-v1.2", "card_id": "EC-TEST-001", "card_version": "1.5.0",
+        "card_schema": "evidence-card-v1.2", "card_id": "EC-TEST-001", "card_version": "1.6.0",
         "card_type": "source_evidence", "artifact_type": "journal_article", "evidence_roles": ["original_research"],
         "workflow_status": "source_checked", "completion_level": "L2", "source_work_id": "WORK-1",
         "source_manifestation_id": "SRC-1", "source_version": "v1", "source_snapshot_hash": "sha256:test",
@@ -118,7 +118,7 @@ def main() -> None:
         "remaining_evidence_gap": "external validation", "next_update_trigger": "new independent study",
     }
     decision_meta = "\n".join([
-        "---", 'card_schema: "evidence-card-v1.2"', 'card_id: "DS-1"', 'card_version: "1.5.0"', 'card_type: "decision_synthesis"',
+        "---", 'card_schema: "evidence-card-v1.2"', 'card_id: "DS-1"', 'card_version: "1.6.0"', 'card_type: "decision_synthesis"',
         'workflow_status: "approved"', 'completion_level: "L2"', 'decision_id: "DEC-1"', 'research_question_ids: ["RQ1"]',
         'as_of_date: "2026-09-04"', 'decision_owner: "tester"', 'load_bearing_conflict: false', 'unresolved_conflict_ids: []',
         'included_claim_ids: ["EC-TEST-001-C01"]', 'excluded_claim_ids: []', 'independence_group_ids: ["DATA-1"]', 'version_family_ids: []',

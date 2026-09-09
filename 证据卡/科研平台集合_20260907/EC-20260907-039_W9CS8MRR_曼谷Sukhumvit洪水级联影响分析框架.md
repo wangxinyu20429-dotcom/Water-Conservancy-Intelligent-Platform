@@ -1,7 +1,7 @@
 ---
 card_schema: "evidence-card-v1.2"
 card_id: "EC-20260907-039"
-card_version: "1.5.0"
+card_version: "1.6.0"
 card_type: "source_evidence"
 artifact_type: "journal_article"
 evidence_roles: ["context_only"]
@@ -27,7 +27,7 @@ independence_group_ids: ["IG-W9CS8MRR"]
 version_family_ids: ["VF-10.3390/w10010081"]
 reading_scope: "full_text"
 extraction_method: "ai_assisted"
-generator_or_pipeline_version: "hydrology-evidence-cards-v1.5-source-specific"
+generator_or_pipeline_version: "hydrology-evidence-cards-v1.6-deep-source-specific"
 verified_claim_ids: []
 verified_by: ""
 verified_at: ""
@@ -139,6 +139,29 @@ MIKEFLOOD给出Sukhumvit案例的积水深度、范围和时间，现场调查�
 - **Zotero入口：** [打开条目](zotero://select/library/items/W9CS8MRR)
 - **本轮实际读取：** Zotero索引全文约100,258字符，索引页数26/26
 - **当前证据级别：** L1机器辅助初读；尚未完成人工逐条原文复核，不能承载正式主题结论。
+
+
+## 深入阅读：曼谷案例如何建立级联影响链
+
+### 危险模拟与社会资料承担不同证据角色
+
+Sukhumvit案例用MIKEFLOOD一维—二维耦合模型描述积水，再结合现场调查、居民和商户访谈、公用事业记录及GIS资料识别服务中断。水深与范围主要由水动力模型提供，停学、通勤、订单、维修和收入影响则来自访谈与记录。每条级联关系都应保留来源类型，避免把受访者经验写成水动力模型输出，或把情景模拟写成已观测损失。
+
+### 道路是跨部门传播的重要中介
+
+洪水首先降低道路通行，随后影响上学、通勤、商业配送和供水设施维修；道路阻断会延迟维修，又延长供水和经营中断。这个链条说明交通不仅是独立受灾部门，也是其他服务恢复的条件。评价关键道路时应结合其连接的学校、商业区、公用设施和替代路线，而非只按受淹深度排序。
+
+### 污染链把基础设施故障连接到公共健康
+
+受污染洪水可能进入供水相关系统并增加健康风险。该路径涉及污染物来源、进入点、水质变化、人口暴露和健康结局多个环节，案例的访谈与系统记录能够提示链条存在，却未必逐环节测得浓度和病例。证据卡应把“观察到的中断”“受访者报告的影响”和“模型或因果图推断”分开，不能把整条链当作统一量化因果效应。
+
+### HAZUR、因果环与GIS图各自回答的问题
+
+因果环用于表达反馈方向，HAZUR韧性框架用于组织服务性能和恢复，树图与GIS用于定位空间传播。它们互补但不可相互替代：因果图不提供发生概率，地图空间重叠不自动证明依赖，韧性曲线也需要真实时间序列校准。研究价值在于把混合证据组织成可检查的城市系统叙事。
+
+### 单片区结论的迁移条件
+
+Sukhumvit的高密度道路、商业活动、公用设施组织和访谈样本具有地方性。迁移到其他城市应重新调查部门依赖、维修通道、污染入口和居民应对，并说明哪些边由工程数据支持、哪些仅是专家或受访者判断。本文能支撑“道路中断可能放大多部门影响”的机制假设，不能给不同城市统一的级联概率或损失系数。
 
 <details>
 <summary><strong>校勘与人工复核备注（默认折叠）</strong></summary>

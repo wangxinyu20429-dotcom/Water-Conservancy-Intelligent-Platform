@@ -1,4 +1,4 @@
-# Human-readable scientific core V1.5
+# Human-readable scientific core V1.6
 
 This contract controls the visible part of every source card. It exists to prevent a structurally valid card from being scientifically empty.
 
@@ -48,7 +48,7 @@ Use `文件解决什么治理问题`, `发布机关、版本和适用对象`, `�
 
 ## Depth rule
 
-Depth comes from reconstructing the evidence path, not from word count. A substantive full-text original study normally needs 4,500–7,000 visible Chinese characters for L1 and 6,000–10,000 for L2. A review normally needs at least 3,500 visible characters and enough detail to reproduce its evidence universe and synthesis logic; a substantial investigation report normally needs at least 3,000. Short official notices may be much shorter if the card explicitly states that no data, method or effect result exists. Repetition, generic domain background, raw abstracts and machine fields do not count.
+Depth comes from reconstructing the evidence path, not from word count alone. A substantive `full_text` or `partial_full_text` card must contain at least 5,000 non-whitespace characters of source-grounded body content, with at least 3,000 characters in the visible L1 scientific narrative and at least 6,000 visible characters at L2/L3. Rich original studies should normally reach 5,000–7,500 visible characters at L1. A review must reconstruct its evidence universe and synthesis logic; a substantial investigation report must reconstruct materials, chronology, calculations and conclusion levels. Short official notices may be much shorter only when the narrower `reading_scope` is explicit and the source genuinely contains no research design or results. Repetition, generic domain background, raw abstracts, bibliography and raw OCR do not count as scientific depth.
 
 For normal original research, the visible **data**, **method/evidence chain**, **validation** and **results** sections should collectively reconstruct the study. Use 500, 1,200, 350 and 1,000 non-whitespace characters as drafting targets when the source has that much substance. A shorter section is acceptable only when another named section carries the detail or the card identifies the source-level reason and resulting limitation. Do not satisfy a minimum by repeating the abstract, repeating another section, or adding a stock boundary sentence.
 

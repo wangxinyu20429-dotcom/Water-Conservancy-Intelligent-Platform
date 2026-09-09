@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate evidence-card v1.5 structure and hard rules R01-R09."""
+"""Validate evidence-card v1.6 structure and hard rules R01-R09."""
 
 from __future__ import annotations
 
@@ -125,6 +125,11 @@ def visible_body(text: str) -> str:
     return body
 
 
+def source_body(text: str) -> str:
+    """Return all card content after frontmatter, including collapsed traceability blocks."""
+    return text.split("---", 2)[2] if text.startswith("---") and len(text.split("---", 2)) == 3 else text
+
+
 def has_heading(body: str, alternatives: list[str]) -> bool:
     return any(re.search(rf"(?m)^##+\s+.*{re.escape(term)}.*$", body) for term in alternatives)
 
@@ -154,7 +159,7 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
             "综合结果": ["综合结果", "关键.*结果", "主要共识"],
             "偏倚与边界": ["偏倚", "证据边界", "结论边界"],
         }
-        minimum = 2050 if artifact == "book_section" else 2900
+        minimum = 3000
     elif artifact in REPORT_ARTIFACTS:
         required = {
             "对象与时间线": ["对象与时间线", "对象、时空范围与时间线", "事件对象", "工程对象"],
@@ -163,14 +168,14 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
             "事实与结果": ["确认.*事实", "关键数字", "结果"],
             "边界": ["结论边界", "证据边界", "使用边界"],
         }
-        minimum = 2600
+        minimum = 3000
     elif artifact in NORMATIVE_ARTIFACTS:
         required = {
             "读取范围": ["读取范围", "本轮读到的材料"],
             "可确认内容": ["可确认", "条款", "事实"],
             "科学边界": ["科学证据边界", "科学边界", "结论边界"],
         }
-        minimum = 700
+        minimum = 3000 if meta.get("reading_scope") in {"full_text", "partial_full_text"} else 700
     else:
         required = {
             "研究问题": ["研究要解决什么问题", "研究问题"],
@@ -184,7 +189,7 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
         level = str(meta.get("completion_level", ""))
         # R09 is a hard lint floor, not the writing target. Semantic depth and
         # source specificity cannot be manufactured by padding to a character count.
-        minimum = (6000 if level in {"L2", "L3"} else 2600) if artifact in RESEARCH_ARTIFACTS else 2500
+        minimum = (6000 if level in {"L2", "L3"} else 3000) if artifact in RESEARCH_ARTIFACTS else 3000
     errors = []
     for label, terms in required.items():
         if not has_heading(body, terms):
@@ -192,6 +197,10 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
     visible_chars = len(re.sub(r"\s+", "", body))
     if visible_chars < minimum:
         errors.append(f"R09 visible scientific analysis is too short for {artifact or 'source'}: {visible_chars} < {minimum} non-space characters")
+    if meta.get("reading_scope") in {"full_text", "partial_full_text"}:
+        body_chars = len(re.sub(r"\s+", "", source_body(text)))
+        if body_chars < 5000:
+            errors.append(f"R09 substantive full/partial-text card body is too short: {body_chars} < 5000 non-space characters")
     if not is_review and artifact not in REPORT_ARTIFACTS and artifact not in NORMATIVE_ARTIFACTS:
         floors = {
             "数据": (["数据到底是什么", "数据与证据材料", "研究数据", "数据来源"], 180),

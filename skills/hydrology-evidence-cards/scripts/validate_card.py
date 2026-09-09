@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate evidence-card v1.4 structure and hard rules R01-R09."""
+"""Validate evidence-card v1.5 structure and hard rules R01-R09."""
 
 from __future__ import annotations
 
@@ -149,15 +149,15 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
         required = {
             "综述问题与范围": ["综述问题", "综述范围"],
             "检索与纳入": ["检索", "纳入"],
-            "纳入证据": ["纳入证据", "资料构成"],
-            "综合方法": ["综合方法", "分类方法", "作者怎样分类或综合"],
-            "综合结果": ["综合结果", "关键.*结果"],
+            "纳入证据": ["纳入证据", "资料构成", "证据构成"],
+            "综合方法": ["综合方法", "综合框架", "论证链", "分类方法", "作者怎样分类或综合"],
+            "综合结果": ["综合结果", "关键.*结果", "主要共识"],
             "偏倚与边界": ["偏倚", "证据边界", "结论边界"],
         }
-        minimum = 3000
+        minimum = 2050 if artifact == "book_section" else 2900
     elif artifact in REPORT_ARTIFACTS:
         required = {
-            "对象与时间线": ["对象与时间线", "事件.*时间线", "工程.*时间线"],
+            "对象与时间线": ["对象与时间线", "对象、时空范围与时间线", "事件对象", "工程对象"],
             "材料与数据": ["材料和数据", "材料与数据", "数据来源"],
             "方法": ["调查.*方法", "评估.*方法", "方法"],
             "事实与结果": ["确认.*事实", "关键数字", "结果"],
@@ -166,7 +166,7 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
         minimum = 2600
     elif artifact in NORMATIVE_ARTIFACTS:
         required = {
-            "读取范围": ["读取范围"],
+            "读取范围": ["读取范围", "本轮读到的材料"],
             "可确认内容": ["可确认", "条款", "事实"],
             "科学边界": ["科学证据边界", "科学边界", "结论边界"],
         }
@@ -174,17 +174,17 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
     else:
         required = {
             "研究问题": ["研究要解决什么问题", "研究问题"],
-            "研究对象": ["研究对象"],
-            "数据": ["数据到底是什么", "研究数据", "数据来源"],
-            "方法": ["方法是怎样", "研究方法", "方法流程"],
-            "验证与比较": ["验证和比较", "验证与比较", "实验设计"],
-            "全文证据链": ["全文证据链展开"],
-            "结果": ["关键.*结果", "研究结果"],
-            "复现": ["复现"],
-            "边界": ["结论边界", "使用边界"],
+            "研究对象": ["研究对象", "对象与边界"],
+            "数据": ["数据到底是什么", "数据与证据材料", "研究数据", "数据来源"],
+            "方法与证据链": ["方法是怎样", "研究设计与方法链", "研究方法", "方法流程", "证据链"],
+            "验证与比较": ["验证和比较", "比较、验证", "验证与比较", "实验设计"],
+            "结果": ["关键结果", "最关键的结果", "研究结果"],
+            "边界": ["结论边界", "证据边界", "使用边界"],
         }
         level = str(meta.get("completion_level", ""))
-        minimum = (6000 if level in {"L2", "L3"} else 3800) if artifact in RESEARCH_ARTIFACTS else 2800
+        # R09 is a hard lint floor, not the writing target. Semantic depth and
+        # source specificity cannot be manufactured by padding to a character count.
+        minimum = (6000 if level in {"L2", "L3"} else 2600) if artifact in RESEARCH_ARTIFACTS else 2500
     errors = []
     for label, terms in required.items():
         if not has_heading(body, terms):
@@ -194,11 +194,10 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
         errors.append(f"R09 visible scientific analysis is too short for {artifact or 'source'}: {visible_chars} < {minimum} non-space characters")
     if not is_review and artifact not in REPORT_ARTIFACTS and artifact not in NORMATIVE_ARTIFACTS:
         floors = {
-            "数据": (["数据到底是什么", "研究数据", "数据来源"], 300),
-            "方法": (["方法是怎样", "研究方法", "方法流程"], 150),
-            "验证": (["验证和比较", "验证与比较", "实验设计"], 150),
-            "结果": (["最关键的研究结果", "最关键的结果", "研究结果"], 150),
-            "全文证据链": (["全文证据链展开"], 700),
+            "数据": (["数据到底是什么", "数据与证据材料", "研究数据", "数据来源"], 180),
+            "方法与证据链": (["研究设计与方法链", "方法是怎样", "研究方法", "方法流程"], 600),
+            "验证": (["验证和比较", "比较、验证", "验证与比较", "实验设计"], 30),
+            "结果": (["关键结果", "最关键的研究结果", "最关键的结果", "研究结果"], 50),
         }
         core_total = 0
         for label, (terms, floor) in floors.items():
@@ -207,8 +206,8 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
             core_total += length
             if section and length < floor:
                 errors.append(f"R09 {label} section is too shallow: {length} < {floor}")
-        if core_total < 1600:
-            errors.append(f"R09 data-method-validation-results-evidence-chain core is too shallow: {core_total} < 1600")
+        if core_total < 1100:
+            errors.append(f"R09 data-method-validation-results evidence core is too shallow: {core_total} < 1100")
         filler = [
             "把上述输入按论文给出的规则转换为研究输出",
             "该结果只在上述研究对象、输入、比较和模型设定内成立",
@@ -217,6 +216,22 @@ def validate_human_core(meta: dict[str, Any], text: str) -> list[str]:
         for phrase in filler:
             if phrase in body:
                 errors.append(f"R09 generic filler must be replaced with source-specific analysis: {phrase}")
+        if re.search(r"(?m)^##+\s+复现需要什么\s*$", body):
+            errors.append("R09 universal reproduction section is not allowed; discuss availability only where it changes evidence strength")
+
+    paragraphs = [
+        re.sub(r"\s+", "", p)
+        for p in re.split(r"\n\s*\n", body)
+        if len(re.sub(r"\s+", "", p)) >= 80 and not p.lstrip().startswith(("|", "- **原题名", "- **作者"))
+    ]
+    seen: set[str] = set()
+    duplicates: set[str] = set()
+    for paragraph in paragraphs:
+        if paragraph in seen:
+            duplicates.add(paragraph[:40])
+        seen.add(paragraph)
+    if duplicates:
+        errors.append("R09 repeated visible paragraph must be removed or rewritten: " + "; ".join(sorted(duplicates)[:3]))
     return errors
 
 

@@ -1,4 +1,4 @@
-# Human-readable scientific core V1.4
+# Human-readable scientific core V1.5
 
 This contract controls the visible part of every source card. It exists to prevent a structurally valid card from being scientifically empty.
 
@@ -8,7 +8,7 @@ Start with a one-sentence takeaway that identifies the object, the action taken 
 
 ## Original empirical or modelling research
 
-Use these visible sections in this order:
+Cover the following scientific questions. The headings and order may change with the paper's own argument; the template must never generate stock prose.
 
 1. `研究要解决什么问题` — practical/scientific problem, author's gap, explicit question or hypothesis, and novelty claimed by the source.
 2. `研究对象与边界` — water object/system, site, event/scenario, time span, scale, independent unit and comparator.
@@ -16,13 +16,12 @@ Use these visible sections in this order:
 4. `方法是怎样一步步得到结果的` — numbered input → model/analysis → coupling/inference → validation/comparison → output steps. Name equations, algorithms or software only after explaining their scientific role.
 5. `验证和比较是否站得住` — baseline/comparator, calibration and validation independence, evaluation metrics, sensitivity/uncertainty analysis, negative controls or missing checks.
 6. `最关键的结果` — three to five result groups. For each, give the finding, supporting number or qualitative evidence, comparator, uncertainty status, locator, and interpretation. State `no located numeric result` rather than inventing precision.
-7. `作者如何解释这些结果` — keep author mechanism explanations separate from measured/simulated facts.
-8. `这篇研究真正贡献了什么` — conceptual, data, method and empirical contribution; do not award novelty the paper did not demonstrate.
-9. `复现需要什么` — inputs, code/model, parameters, random seeds, environment, expected outputs and acceptance checks; identify unavailable pieces.
-10. `对当前水利科研平台的用途` — concrete use in problem framing, variables, design, benchmark or falsification; also state what it cannot support.
-11. `结论边界` — design, data, spatial, temporal, measurement, model, inference and transfer limits, tied to affected findings.
+7. `作者如何解释这些结果` — keep author mechanism explanations separate from measured/simulated facts; omit a separate section when no distinct mechanism is argued.
+8. `这篇研究真正贡献了什么` — conceptual, data, method and empirical contribution; do not replace contribution with a sentence about platform usage.
+9. `对当前水利科研平台的用途` — identify the exact variable, method component, comparator, hypothesis or falsification test that can be inherited.
+10. `结论边界` — design, data, spatial, temporal, measurement, model, inference and transfer limits, tied to affected findings.
 
-Between validation and the final contribution assessment, add `全文证据链展开`. This section is the main depth test. It must explain at least one complete path from a concrete source input to a concrete conclusion, and normally cover: why the chosen data can address the question; how each principal model or analytical stage transforms the data; which parameter, threshold or assumption controls the transition; what comparison, observation or sensitivity analysis checks the output; how the decisive figures/tables relate to the stated result; and which link remains weak. Name the actual variables, modules, study groups, scenarios and outputs. Generic statements that could be copied into another paper do not count.
+The main depth test is one complete path from a concrete source input to a concrete conclusion. It may sit inside `研究设计与方法链` instead of a fixed `全文证据链展开` section. Explain why the data can address the question; how each model or analytical stage transforms them; which parameter, threshold or assumption controls the transition; what comparison or observation checks the output; how decisive figures/tables support the result; and which link remains weak. Name the actual variables, modules, study groups, scenarios and outputs.
 
 ## Review or evidence synthesis
 
@@ -51,8 +50,10 @@ Use `文件解决什么治理问题`, `发布机关、版本和适用对象`, `�
 
 Depth comes from reconstructing the evidence path, not from word count. A substantive full-text original study normally needs 4,500–7,000 visible Chinese characters for L1 and 6,000–10,000 for L2. A review normally needs at least 3,500 visible characters and enough detail to reproduce its evidence universe and synthesis logic; a substantial investigation report normally needs at least 3,000. Short official notices may be much shorter if the card explicitly states that no data, method or effect result exists. Repetition, generic domain background, raw abstracts and machine fields do not count.
 
-For normal original research, the visible **data**, **method**, **validation**, **results**, and **全文证据链展开** sections should collectively reconstruct the study. Use 500, 700, 350, 800, and 1,000 non-whitespace characters as drafting targets when the source has that much substance. The hard lint floor is lower for each individual section because detailed method and result interpretation may sit in `全文证据链展开`; it additionally requires at least 1,600 characters across the five sections. A shorter section is acceptable only when another named section carries the detail or the card identifies the source-level reason and resulting limitation. Do not satisfy a minimum by repeating the abstract or a stock boundary sentence.
+For normal original research, the visible **data**, **method/evidence chain**, **validation** and **results** sections should collectively reconstruct the study. Use 500, 1,200, 350 and 1,000 non-whitespace characters as drafting targets when the source has that much substance. A shorter section is acceptable only when another named section carries the detail or the card identifies the source-level reason and resulting limitation. Do not satisfy a minimum by repeating the abstract, repeating another section, or adding a stock boundary sentence.
+
+Run a duplication check before handoff. Identical or near-identical paragraphs in `科学贡献`, `对后续研究的价值` and `证据边界` are a failure: contribution explains what the paper adds to knowledge; research value explains what a later study can inherit or test; boundary explains which inference would become invalid and why.
 
 ## Final self-check
 
-Before handoff, a reader should be able to point to one visible place for each of these questions: What exactly was studied? On what observations or constructed inputs? What transformations produced the outputs? Against what was it checked? What were the actual results? Which statements are authors' explanations? What would be needed to reproduce it? Where does the conclusion stop? If any answer is missing, state the missing fact and its consequence.
+Before handoff, a reader should be able to point to one visible place for each of these questions: What exactly was studied? On what observations or constructed inputs? What transformations produced the outputs? Against what was it checked? What were the actual results? Which statements are authors' explanations? What does the paper add? Which part can a later study inherit? Where does the conclusion stop? If any answer is missing, state the missing fact and its consequence.

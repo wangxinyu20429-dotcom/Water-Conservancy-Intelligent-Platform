@@ -1,7 +1,7 @@
 interface:
   display_name: "水利文献发现与主题综合"
-  short_description: "双路线发现方向、筛选全文、形成深度主题并反馈重算"
+  short_description: "双路线形成初步主题，经人工筛选建立并深化既定主题"
   brand_color: "#176B87"
-  default_prompt: "Use $hydrology-theme-synthesis to choose a small-sample or large-corpus route, discover and review candidate hydrology directions, select key full texts, synthesize source-checked evidence cards into a deep theme, and run source, corpus, or discovery-model feedback loops."
+  default_prompt: "Use $hydrology-theme-synthesis to choose a small-sample or large-corpus route, create screening-only preliminary hydrology themes, require recorded human decisions before establishing themes, select key full texts, synthesize source-checked evidence cards into each established theme, and run source, corpus, or discovery-model feedback loops."
 policy:
   allow_implicit_invocation: true

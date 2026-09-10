@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a traceable hydrology theme v1.2 draft from evidence-card files."""
+"""Build a traceable established hydrology theme v1.3 draft from evidence-card files."""
 
 from __future__ import annotations
 
@@ -125,13 +125,60 @@ def main() -> None:
     parser.add_argument("--as-of-date", default=str(date.today()))
     parser.add_argument("--discovery-route", choices=("small_sample", "large_corpus", "hybrid"), default="small_sample")
     parser.add_argument("--workflow-run-ref", action="append", default=[])
-    parser.add_argument("--candidate-direction-ref", action="append", default=[])
+    parser.add_argument("--preliminary-theme-file", action="append", required=True)
     parser.add_argument("--card", action="append", default=[])
     parser.add_argument("--cards-dir", action="append", default=[])
     parser.add_argument("--claim", action="append", default=[], help="Claim explicitly selected after scientific review")
     parser.add_argument("--include-all-verified", action="store_true")
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
+
+    preliminary_refs: list[str] = []
+    preliminary_snapshot_parts: list[str] = []
+    screening_decision_refs: set[str] = set()
+    for raw_path in args.preliminary_theme_file:
+        preliminary_path = Path(raw_path).resolve()
+        if not preliminary_path.exists():
+            raise SystemExit(f"Preliminary theme not found: {preliminary_path}")
+        preliminary_text = preliminary_path.read_text(encoding="utf-8-sig")
+        preliminary_meta = parse_frontmatter(preliminary_text)
+        preliminary_blocks = json_blocks(preliminary_text, "preliminary-theme-json")
+        if preliminary_meta.get("preliminary_theme_schema") != "hydrology-preliminary-theme-v1.0" or len(preliminary_blocks) != 1:
+            raise SystemExit(f"Invalid preliminary theme structure: {preliminary_path}")
+        preliminary_data = preliminary_blocks[0]
+        preliminary_ref = clean_text(preliminary_meta.get("preliminary_theme_ref"))
+        if not preliminary_ref or preliminary_data.get("preliminary_theme_ref") != preliminary_ref:
+            raise SystemExit(f"Preliminary theme ref is missing or inconsistent: {preliminary_path}")
+        decision = preliminary_data.get("human_screening_decision")
+        if preliminary_meta.get("allowed_use") != "screening_only":
+            raise SystemExit(f"Preliminary theme allowed_use is invalid: {preliminary_path}")
+        if not isinstance(decision, dict) or preliminary_meta.get("status") != "screened" or preliminary_meta.get("human_screening_status") != "completed" or decision.get("status") != "completed":
+            raise SystemExit(f"Human screening is not completed: {preliminary_path}")
+        if decision.get("decision") not in {"establish", "rename_then_establish", "merge"}:
+            raise SystemExit(f"Preliminary theme decision does not permit establishment: {preliminary_path}")
+        if args.theme_ref not in list_value(decision.get("resulting_established_theme_refs")):
+            raise SystemExit(f"Human decision does not establish {args.theme_ref}: {preliminary_path}")
+        for key in ("decision_ref", "rationale", "reviewer", "reviewed_at"):
+            if not clean_text(decision.get(key)):
+                raise SystemExit(f"Human screening {key} is missing: {preliminary_path}")
+        formation = preliminary_data.get("formation_basis") if isinstance(preliminary_data.get("formation_basis"), dict) else {}
+        focus = preliminary_data.get("scientific_focus_hypothesis") if isinstance(preliminary_data.get("scientific_focus_hypothesis"), dict) else {}
+        boundary = preliminary_data.get("boundary_hypothesis") if isinstance(preliminary_data.get("boundary_hypothesis"), dict) else {}
+        evidence = preliminary_data.get("screening_evidence") if isinstance(preliminary_data.get("screening_evidence"), dict) else {}
+        if not list_value(formation.get("representative_source_refs")) or not clean_text(formation.get("machine_or_manual_grouping_basis")):
+            raise SystemExit(f"Human screening lacks representative sources or grouping basis: {preliminary_path}")
+        if not clean_text(focus.get("candidate_problem")) or not clean_text(focus.get("why_more_than_a_keyword_or_method_label")):
+            raise SystemExit(f"Human screening lacks a defensible scientific focus: {preliminary_path}")
+        if not list_value(boundary.get("tentative_inclusion")):
+            raise SystemExit(f"Human screening lacks an inclusion boundary: {preliminary_path}")
+        if not clean_text(evidence.get("representative_literature_summary")) or not clean_text(evidence.get("research_question_relevance")):
+            raise SystemExit(f"Human screening lacks literature and relevance reasoning: {preliminary_path}")
+        decision_ref = clean_text(decision.get("decision_ref"))
+        preliminary_refs.append(preliminary_ref)
+        screening_decision_refs.add(decision_ref)
+        preliminary_snapshot_parts.append(f"{preliminary_path.as_posix()}:{hashlib.sha256(preliminary_path.read_bytes()).hexdigest()}")
+    if len(screening_decision_refs) != 1:
+        raise SystemExit("All preliminary themes used for one established theme must share one screening decision_ref")
 
     paths = discover_cards(args)
     if not paths:
@@ -253,7 +300,9 @@ def main() -> None:
         "AS_OF_YEAR": args.as_of_date[:4],
         "DISCOVERY_ROUTE": args.discovery_route,
         "WORKFLOW_RUN_REFS": dump_compact(args.workflow_run_ref),
-        "CANDIDATE_DIRECTION_REFS": dump_compact(args.candidate_direction_ref),
+        "PRELIMINARY_THEME_REFS": dump_compact(preliminary_refs),
+        "PRELIMINARY_THEME_SNAPSHOT_HASH": hashlib.sha256("\n".join(sorted(preliminary_snapshot_parts)).encode("utf-8")).hexdigest(),
+        "HUMAN_SCREENING_DECISION_REF": next(iter(screening_decision_refs)),
         "INPUT_CARD_IDS": dump_compact(sorted(set(card_ids))),
         "INCLUDED_CLAIM_IDS": dump_compact([x["claim_id"] for x in included]),
         "CONTEXT_ONLY_CLAIM_IDS": dump_compact([x["claim_id"] for x in context_only]),

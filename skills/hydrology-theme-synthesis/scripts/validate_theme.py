@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate hydrology theme v1.1/v1.2 structure, provenance, and deep narrative."""
+"""Validate hydrology theme v1.1-v1.3 structure, provenance, screening gate, and deep narrative."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ BLOCKS = [
     "literature-priority-json", "evidence-feedback-json",
     "writing-readiness-json", "theme-review-json",
 ]
-LIFECYCLE = {"candidate_dossier", "observation", "active", "contested", "dormant", "archived"}
+LIFECYCLE = {"candidate_dossier", "established_developing", "observation", "active", "contested", "dormant", "archived"}
 WORKFLOW = {"draft", "machine_synthesized", "human_reviewed", "mentor_confirmed", "superseded", "archived"}
 KNOWLEDGE = {"supported", "provisionally_supported", "contested", "context_dependent", "insufficient", "unknown"}
 PROFILE_LEVELS = {"high", "medium", "low", "unknown"}
@@ -306,16 +306,30 @@ def validate(meta: dict[str, Any], blocks: dict[str, dict[str, Any]], final: boo
         if key not in meta:
             errors.append(f"TG00 missing frontmatter field: {key}")
     schema = meta.get("theme_schema")
-    if schema not in {"hydrology-theme-v1.1", "hydrology-theme-v1.2"}:
-        errors.append("TG00 theme_schema must be hydrology-theme-v1.1 or hydrology-theme-v1.2")
-    if schema == "hydrology-theme-v1.2":
+    if schema not in {"hydrology-theme-v1.1", "hydrology-theme-v1.2", "hydrology-theme-v1.3"}:
+        errors.append("TG00 theme_schema must be hydrology-theme-v1.1, hydrology-theme-v1.2 or hydrology-theme-v1.3")
+    if schema in {"hydrology-theme-v1.2", "hydrology-theme-v1.3"}:
         for key in ("discovery_route", "workflow_run_refs", "candidate_direction_refs"):
+            if schema == "hydrology-theme-v1.3" and key == "candidate_direction_refs":
+                continue
             if key not in meta:
-                errors.append(f"TG00 v1.2 theme missing frontmatter field: {key}")
+                errors.append(f"TG00 {schema} theme missing frontmatter field: {key}")
         if meta.get("discovery_route") not in DISCOVERY_ROUTES:
-            errors.append("TG00 v1.2 theme requires small_sample, large_corpus or hybrid discovery_route")
+            errors.append(f"TG00 {schema} theme requires small_sample, large_corpus or hybrid discovery_route")
         if final and not list_value(meta.get("workflow_run_refs")):
-            errors.append("TG00 v1.2 final theme requires a workflow_run_ref")
+            errors.append(f"TG00 {schema} final theme requires a workflow_run_ref")
+    if schema == "hydrology-theme-v1.3":
+        for key in ("theme_stage", "preliminary_theme_refs", "preliminary_theme_snapshot_hash", "human_screening_decision_ref", "human_screening_status"):
+            if key not in meta:
+                errors.append(f"TG00 v1.3 established theme missing frontmatter field: {key}")
+        if meta.get("theme_stage") != "established":
+            errors.append("TG00 v1.3 theme_stage must be established")
+        if not list_value(meta.get("preliminary_theme_refs")):
+            errors.append("TG00 v1.3 established theme requires preliminary_theme_refs")
+        if blank(meta.get("preliminary_theme_snapshot_hash")):
+            errors.append("TG00 v1.3 established theme requires a preliminary_theme_snapshot_hash")
+        if blank(meta.get("human_screening_decision_ref")) or meta.get("human_screening_status") != "approved":
+            errors.append("TG00 v1.3 established theme requires an approved human screening decision")
     if meta.get("lifecycle_state") not in LIFECYCLE:
         errors.append("TG09 invalid lifecycle_state")
     if meta.get("workflow_status") not in WORKFLOW:

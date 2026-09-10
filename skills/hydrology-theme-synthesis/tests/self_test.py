@@ -13,6 +13,8 @@ BUILD = ROOT / "scripts" / "build_theme.py"
 VALIDATE = ROOT / "scripts" / "validate_theme.py"
 INIT_WORKFLOW = ROOT / "scripts" / "init_workflow_run.py"
 VALIDATE_WORKFLOW = ROOT / "scripts" / "validate_workflow_run.py"
+INIT_PRELIMINARY = ROOT / "scripts" / "init_preliminary_theme.py"
+VALIDATE_PRELIMINARY = ROOT / "scripts" / "validate_preliminary_theme.py"
 
 SOURCE = """---
 card_schema: "evidence-card-v1.2"
@@ -70,6 +72,38 @@ def replace_priority(theme: str, item: dict) -> str:
     return theme[:body_start] + json.dumps(block, ensure_ascii=False, indent=2) + theme[end:]
 
 
+def approve_preliminary(theme: str, established_ref: str) -> str:
+    start = theme.index("~~~preliminary-theme-json")
+    body_start = theme.index("\n", start) + 1
+    end = theme.index("\n~~~", body_start)
+    block = json.loads(theme[body_start:end])
+    block["formation_basis"].update({
+        "representative_source_refs": ["SRC-001"],
+        "machine_or_manual_grouping_basis": "代表文献围绕同一测试问题形成可解释分组。",
+    })
+    block["scientific_focus_hypothesis"].update({
+        "candidate_problem": "测试条件下的水文比较问题",
+        "why_more_than_a_keyword_or_method_label": "它包含对象、关系和待解释条件。",
+    })
+    block["boundary_hypothesis"]["tentative_inclusion"] = ["测试对象及其比较结果"]
+    block["screening_evidence"].update({
+        "representative_literature_summary": "代表来源直接研究测试问题。",
+        "research_question_relevance": "直接回答本轮结构验收问题。",
+    })
+    block["human_screening_decision"].update({
+        "status": "completed",
+        "decision_ref": "decision:test",
+        "decision": "establish",
+        "rationale": "人工确认该组材料围绕一个可持续研究问题。",
+        "reviewer": "test-human",
+        "reviewed_at": "2026-09-10",
+        "resulting_established_theme_refs": [established_ref],
+    })
+    updated = theme[:body_start] + json.dumps(block, ensure_ascii=False, indent=2) + theme[end:]
+    updated = updated.replace('human_screening_status: "not_started"', 'human_screening_status: "completed"', 1)
+    return updated.replace('status: "draft"', 'status: "screened"', 1)
+
+
 def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
@@ -78,19 +112,33 @@ def main() -> None:
             "--question", "测试问题", "--intended-use", "结构验收",
             "--route", "large_corpus", "--output", str(workflow))
         run(str(VALIDATE_WORKFLOW), str(workflow), "--mode", "draft")
+        incomplete = run(str(VALIDATE_WORKFLOW), str(workflow), "--mode", "final", ok=False)
+        assert "completed human theme-screening gate" in incomplete.stdout
         broken_workflow = workflow.read_text(encoding="utf-8").replace(
-            '"purpose": "allocate_full_text_review_across_candidate_themes_only"',
+            '"purpose": "allocate_full_text_review_across_established_themes_only"',
             '"purpose": "claim_credibility"',
         )
         workflow.write_text(broken_workflow, encoding="utf-8")
         result = run(str(VALIDATE_WORKFLOW), str(workflow), "--mode", "draft", ok=False)
         assert "WF06" in result.stdout
 
+        preliminary = work / "preliminary-theme.md"
+        run(str(INIT_PRELIMINARY), "--preliminary-theme-ref", "pt:test", "--title", "测试初步主题",
+            "--discovery-route", "large_corpus", "--workflow-run-ref", "run:test", "--output", str(preliminary))
+        run(str(VALIDATE_PRELIMINARY), str(preliminary), "--mode", "draft")
+        blocked = run(str(BUILD), "--theme-ref", "et:test", "--title", "不应生成",
+            "--preliminary-theme-file", str(preliminary), "--card", str(work / "missing-card.md"),
+            "--output", str(work / "blocked-theme.md"), ok=False)
+        assert "Human screening is not completed" in blocked.stdout + blocked.stderr
+        preliminary.write_text(approve_preliminary(preliminary.read_text(encoding="utf-8"), "et:test"), encoding="utf-8")
+        run(str(VALIDATE_PRELIMINARY), str(preliminary), "--mode", "final")
+
         source = work / "EC-TEST-001.md"
         theme = work / "theme.md"
         source.write_text(SOURCE, encoding="utf-8")
-        run(str(BUILD), "--theme-ref", "draft:test", "--title", "测试主题",
+        run(str(BUILD), "--theme-ref", "et:test", "--title", "测试主题",
             "--question", "测试问题", "--intended-use", "结构验收",
+            "--preliminary-theme-file", str(preliminary),
             "--card", str(source), "--claim", "EC-TEST-001-C01",
             "--output", str(theme))
         built = theme.read_text(encoding="utf-8")
@@ -98,10 +146,14 @@ def main() -> None:
         run(str(VALIDATE), str(theme), "--mode", "draft", "--index-root", str(work))
 
         legacy = work / "legacy-theme.md"
-        legacy_text = built.replace('theme_schema: "hydrology-theme-v1.2"', 'theme_schema: "hydrology-theme-v1.1"')
+        legacy_text = built.replace('theme_schema: "hydrology-theme-v1.3"', 'theme_schema: "hydrology-theme-v1.1"')
+        legacy_text = legacy_text.replace('theme_version: "1.3.0"', 'theme_version: "1.1.0"')
         legacy_text = "\n".join(
             line for line in legacy_text.splitlines()
-            if not line.startswith(("discovery_route:", "workflow_run_refs:", "candidate_direction_refs:"))
+            if not line.startswith((
+                "discovery_route:", "workflow_run_refs:", "preliminary_theme_refs:",
+                "preliminary_theme_snapshot_hash:", "human_screening_decision_ref:", "human_screening_status:", "theme_stage:",
+            ))
         ) + "\n"
         legacy.write_text(legacy_text, encoding="utf-8")
         run(str(VALIDATE), str(legacy), "--mode", "draft", "--index-root", str(work))

@@ -9,12 +9,18 @@ import re
 from pathlib import Path
 from typing import Any
 
-SCHEMA = "hydrology-literature-to-theme-v1.0"
+SCHEMAS = {"hydrology-literature-to-theme-v1.0", "hydrology-literature-to-theme-v1.1"}
 ROUTES = {"small_sample", "large_corpus", "hybrid"}
 STATUSES = {"draft", "running", "human_review", "mentor_review", "complete", "blocked"}
 FEEDBACK_TYPES = {"source_recheck", "corpus_supplement", "discovery_model_correction"}
-THEME_PURPOSE = "allocate_full_text_review_across_candidate_themes_only"
-DOCUMENT_PURPOSE = "rank_documents_within_a_candidate_theme_for_full_text_review_only"
+THEME_PURPOSE_V1 = "allocate_full_text_review_across_candidate_themes_only"
+DOCUMENT_PURPOSE_V1 = "rank_documents_within_a_candidate_theme_for_full_text_review_only"
+THEME_PURPOSE_V11 = "allocate_full_text_review_across_established_themes_only"
+DOCUMENT_PURPOSE_V11 = "rank_documents_within_an_established_theme_for_full_text_review_only"
+SCREENING_DECISIONS = {
+    "establish", "rename_then_establish", "merge", "split_and_rescreen",
+    "watch", "supplement_before_decision", "reject",
+}
 
 
 def parse_scalar(raw: str) -> Any:
@@ -72,8 +78,9 @@ def validate(meta: dict[str, Any], run: dict[str, Any], final: bool) -> tuple[li
         "as_of_date", "generated_by", "generator_version", "human_review_status",
         "mentor_decision_status",
     ), "WF00 frontmatter")
-    if meta.get("workflow_schema") != SCHEMA:
-        errors.append(f"WF00 workflow_schema must be {SCHEMA}")
+    schema = meta.get("workflow_schema")
+    if schema not in SCHEMAS:
+        errors.append(f"WF00 workflow_schema must be one of {sorted(SCHEMAS)}")
     route = str(meta.get("route") or "")
     if route not in ROUTES:
         errors.append("WF01 route must be small_sample, large_corpus or hybrid")
@@ -82,7 +89,9 @@ def validate(meta: dict[str, Any], run: dict[str, Any], final: bool) -> tuple[li
 
     task = run.get("research_task") if isinstance(run.get("research_task"), dict) else {}
     selection = run.get("route_selection") if isinstance(run.get("route_selection"), dict) else {}
-    candidate = run.get("candidate_direction_review") if isinstance(run.get("candidate_direction_review"), dict) else {}
+    preliminary_key = "preliminary_theme_review" if schema == "hydrology-literature-to-theme-v1.1" else "candidate_direction_review"
+    preliminary = run.get(preliminary_key) if isinstance(run.get(preliminary_key), dict) else {}
+    screening = run.get("theme_screening_gate") if isinstance(run.get("theme_screening_gate"), dict) else {}
     theme_priority = run.get("theme_level_priority") if isinstance(run.get("theme_level_priority"), dict) else {}
     document_priority = run.get("document_level_priority") if isinstance(run.get("document_level_priority"), dict) else {}
     admission = run.get("claim_admission") if isinstance(run.get("claim_admission"), dict) else {}
@@ -90,12 +99,16 @@ def validate(meta: dict[str, Any], run: dict[str, Any], final: bool) -> tuple[li
     decision = run.get("human_and_mentor_decision") if isinstance(run.get("human_and_mentor_decision"), dict) else {}
 
     for key in (
-        "research_task", "route_selection", "candidate_direction_review", "theme_level_priority",
+        "research_task", "route_selection", preliminary_key, "theme_level_priority",
         "document_level_priority", "full_text_queue", "evidence_card_handoff", "claim_admission",
         "feedback_loops", "recalculation", "human_and_mentor_decision", "limitations", "audit_log",
     ):
         if key not in run:
             errors.append(f"WF00 workflow-run-json missing {key}")
+    if schema == "hydrology-literature-to-theme-v1.1":
+        for key in ("theme_screening_gate", "established_themes"):
+            if key not in run:
+                errors.append(f"WF00 v1.1 workflow-run-json missing {key}")
 
     if blank(task.get("question")):
         errors.append("WF02 research question is required")
@@ -132,10 +145,12 @@ def validate(meta: dict[str, Any], run: dict[str, Any], final: bool) -> tuple[li
                 if trend.get(key) is not True:
                     errors.append(f"WF05 completed topic trend requires {key}=true")
 
-    if theme_priority.get("purpose") != THEME_PURPOSE:
-        errors.append("WF06 theme priority may only allocate full-text review across candidate themes")
-    if document_priority.get("purpose") != DOCUMENT_PURPOSE:
-        errors.append("WF06 document priority may only rank full-text review within a candidate theme")
+    expected_theme_purpose = THEME_PURPOSE_V11 if schema == "hydrology-literature-to-theme-v1.1" else THEME_PURPOSE_V1
+    expected_document_purpose = DOCUMENT_PURPOSE_V11 if schema == "hydrology-literature-to-theme-v1.1" else DOCUMENT_PURPOSE_V1
+    if theme_priority.get("purpose") != expected_theme_purpose:
+        errors.append("WF06 theme priority has the wrong analysis unit or purpose")
+    if document_priority.get("purpose") != expected_document_purpose:
+        errors.append("WF06 document priority has the wrong analysis unit or purpose")
     if theme_priority.get("composite_weight_status") not in {"not_frozen", "pilot_registered", "mentor_frozen"}:
         errors.append("WF06 invalid theme composite weight status")
     if document_priority.get("composite_weight_status") not in {"not_frozen", "pilot_registered", "mentor_frozen"}:
@@ -147,6 +162,8 @@ def validate(meta: dict[str, Any], run: dict[str, Any], final: bool) -> tuple[li
             continue
         if item.get("paper_id") or item.get("source_card_id"):
             errors.append("WF06 topic growth cannot be assigned directly to a paper in theme priority")
+        if schema == "hydrology-literature-to-theme-v1.1" and blank(item.get("established_theme_ref")):
+            errors.append("WF06 v1.1 theme priority item requires established_theme_ref")
         trend = item.get("topic_growth_trend")
         if trend not in (None, "unknown", "not_applicable") and not isinstance(trend, dict):
             errors.append("WF05 topic_growth_trend must be an object, unknown or not_applicable")
@@ -155,8 +172,9 @@ def validate(meta: dict[str, Any], run: dict[str, Any], final: bool) -> tuple[li
         if not isinstance(item, dict):
             errors.append("WF06 document priority item must be an object")
             continue
-        if blank(item.get("candidate_direction_ref")) or blank(item.get("source_ref")):
-            errors.append("WF06 document priority item requires candidate_direction_ref and source_ref")
+        theme_ref_key = "established_theme_ref" if schema == "hydrology-literature-to-theme-v1.1" else "candidate_direction_ref"
+        if blank(item.get(theme_ref_key)) or blank(item.get("source_ref")):
+            errors.append(f"WF06 document priority item requires {theme_ref_key} and source_ref")
         if "topic_growth_score" in item:
             errors.append("WF06 document priority must not copy a topic-growth score onto a paper")
         for signal_name in ("citation_signal", "journal_signal"):
@@ -172,8 +190,58 @@ def validate(meta: dict[str, Any], run: dict[str, Any], final: bool) -> tuple[li
                     if blank(signal.get(key)):
                         errors.append(f"WF06 verified {signal_name} missing {key}")
 
-    if not isinstance(candidate.get("human_boundary_reviewed"), bool):
+    if not isinstance(preliminary.get("human_boundary_reviewed"), bool):
         errors.append("WF07 human_boundary_reviewed must be boolean")
+    if schema == "hydrology-literature-to-theme-v1.1":
+        if preliminary.get("status") not in {"not_started", "generated", "human_review", "completed", "blocked"}:
+            errors.append("WF07 invalid preliminary-theme review status")
+        if screening.get("status") not in {"not_started", "in_review", "completed", "blocked"}:
+            errors.append("WF07 invalid theme-screening gate status")
+        if not isinstance(screening.get("all_preliminary_themes_decided"), bool):
+            errors.append("WF07 all_preliminary_themes_decided must be boolean")
+        decision_refs: set[str] = set()
+        decided_preliminary_refs: set[str] = set()
+        decision_links = list_value(screening.get("decision_links"))
+        for item in decision_links:
+            if not isinstance(item, dict):
+                errors.append("WF07 screening decision link must be an object")
+                continue
+            linked_preliminary_refs = {str(x) for x in list_value(item.get("preliminary_theme_refs")) if str(x)}
+            linked_source_files = {str(x) for x in list_value(item.get("source_file_refs")) if str(x)}
+            if blank(item.get("decision_ref")) or not linked_preliminary_refs or not linked_source_files:
+                errors.append("WF07 screening decision link requires decision_ref, preliminary_theme_refs and source_file_refs")
+            else:
+                decision_refs.add(str(item.get("decision_ref")))
+                decided_preliminary_refs.update(linked_preliminary_refs)
+            if item.get("decision") not in SCREENING_DECISIONS:
+                errors.append("WF07 screening decision is not allowed")
+            if item.get("decision") in {"establish", "rename_then_establish", "merge"} and not list_value(item.get("resulting_established_theme_refs")):
+                errors.append("WF07 establishment decision requires resulting_established_theme_refs")
+            if item.get("decision") == "split_and_rescreen" and not list_value(item.get("split_into_preliminary_theme_refs")):
+                errors.append("WF07 split decision requires split_into_preliminary_theme_refs")
+        if len(decision_refs) != len(decision_links):
+            errors.append("WF07 screening decision_ref values must be unique and nonblank")
+        preliminary_refs = {str(x) for x in list_value(preliminary.get("preliminary_theme_refs")) if str(x)}
+        if screening.get("all_preliminary_themes_decided") is True and not preliminary_refs.issubset(decided_preliminary_refs):
+            errors.append("WF07 all_preliminary_themes_decided=true but some preliminary themes lack decisions")
+        established_refs: set[str] = set()
+        for item in list_value(run.get("established_themes")):
+            if not isinstance(item, dict):
+                errors.append("WF07 established theme must be an object")
+                continue
+            ref = str(item.get("established_theme_ref") or "")
+            if not ref:
+                errors.append("WF07 established theme requires established_theme_ref")
+            established_refs.add(ref)
+            for key in ("screening_decision_ref", "theme_file_ref"):
+                if blank(item.get(key)):
+                    errors.append(f"WF07 established theme missing {key}")
+            if item.get("screening_decision_ref") not in decision_refs:
+                errors.append("WF07 established theme must point to a recorded screening decision")
+            if not list_value(item.get("source_preliminary_theme_refs")):
+                errors.append("WF07 established theme requires source_preliminary_theme_refs")
+        if len(established_refs) != len(list_value(run.get("established_themes"))):
+            errors.append("WF07 established_theme_ref values must be unique and nonblank")
     for feedback in list_value(run.get("feedback_loops")):
         if not isinstance(feedback, dict):
             errors.append("WF08 feedback entry must be an object")
@@ -203,8 +271,11 @@ def validate(meta: dict[str, Any], run: dict[str, Any], final: bool) -> tuple[li
     if final:
         if task.get("boundary_frozen") is not True:
             errors.append("WF02 final run requires frozen research boundary")
-        if candidate.get("human_boundary_reviewed") is not True:
-            errors.append("WF07 final run requires human candidate-direction boundary review")
+        if preliminary.get("human_boundary_reviewed") is not True:
+            errors.append("WF07 final run requires human preliminary-theme boundary review")
+        if schema == "hydrology-literature-to-theme-v1.1":
+            if screening.get("status") != "completed" or screening.get("all_preliminary_themes_decided") is not True:
+                errors.append("WF07 final v1.1 run requires a completed human theme-screening gate")
         if meta.get("human_review_status") != "completed":
             errors.append("WF10 final run requires completed human review")
         if meta.get("mentor_decision_status") != "confirmed":
@@ -212,8 +283,10 @@ def validate(meta: dict[str, Any], run: dict[str, Any], final: bool) -> tuple[li
     else:
         if not task.get("boundary_frozen"):
             warnings.append("WF02 research boundary is not yet frozen")
-        if not candidate.get("human_boundary_reviewed"):
-            warnings.append("WF07 candidate-direction boundary has not completed human review")
+        if not preliminary.get("human_boundary_reviewed"):
+            warnings.append("WF07 preliminary-theme boundary has not completed human review")
+        if schema == "hydrology-literature-to-theme-v1.1" and screening.get("status") != "completed":
+            warnings.append("WF07 preliminary themes have not completed the human screening gate")
 
     # Prevent discovery signals from masquerading as evidence admission.
     for claim_id in list_value(admission.get("included_claim_ids")):
@@ -251,7 +324,7 @@ def main() -> None:
         print(f"ERROR: {item}")
     if errors:
         raise SystemExit(1)
-    print("PASS: WF00-WF11 workflow structure and boundary checks completed; scientific validity still requires source and human review")
+    print("PASS: WF00-WF11 workflow structure, two-theme gate and boundary checks completed; scientific validity still requires source and human review")
 
 
 if __name__ == "__main__":

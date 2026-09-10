@@ -1,20 +1,20 @@
 ---
-workflow_schema: "hydrology-literature-to-theme-v1.0"
+workflow_schema: "hydrology-literature-to-theme-v1.1"
 workflow_ref: "{{WORKFLOW_REF}}"
-workflow_version: "1.0.0"
+workflow_version: "1.1.0"
 title: "{{TITLE}}"
 route: "{{ROUTE}}"
 status: "draft"
 as_of_date: "{{AS_OF_DATE}}"
 generated_by: "hydrology-theme-synthesis"
-generator_version: "1.2.0"
+generator_version: "1.3.0"
 human_review_status: "not_started"
 mentor_decision_status: "not_requested"
 ---
 
 # {{TITLE}}
 
-> 本文件记录一次“问题—发现—全文—证据—主题—反馈—决策”运行。机器完成只表示流程字段齐全；候选方向不等于正式主题，排序不等于证据可信度，导师决定不能由机器状态替代。
+> 本文件记录一次“问题—初步主题—人工筛选—既定主题—全文—证据—深化—反馈—决策”运行。初步主题只用于筛选；只有带人工筛选记录的既定主题才能进入全文证据和深度综合。排序不等于证据可信度，机器状态不能替代人工和导师决定。
 
 ~~~workflow-run-json
 {
@@ -31,7 +31,7 @@ mentor_decision_status: "not_requested"
       "exclusion": []
     },
     "boundary_frozen": false,
-    "allowed_conclusion_level": "candidate_direction_only"
+    "allowed_conclusion_level": "preliminary_theme_screening_only"
   },
   "route_selection": {
     "route": "{{ROUTE}}",
@@ -80,16 +80,31 @@ mentor_decision_status: "not_requested"
       }
     }
   },
-  "candidate_direction_review": {
+  "preliminary_theme_review": {
     "status": "not_started",
-    "candidate_directions": [],
-    "watch_clusters": [],
+    "preliminary_theme_refs": [],
+    "watch_cluster_refs": [],
     "search_facets": [],
-    "false_or_unstable_clusters": [],
+    "false_or_unstable_cluster_refs": [],
     "human_boundary_reviewed": false
   },
+  "theme_screening_gate": {
+    "status": "not_started",
+    "allowed_decisions": [
+      "establish",
+      "rename_then_establish",
+      "merge",
+      "split_and_rescreen",
+      "watch",
+      "supplement_before_decision",
+      "reject"
+    ],
+    "decision_links": [],
+    "all_preliminary_themes_decided": false
+  },
+  "established_themes": [],
   "theme_level_priority": {
-    "purpose": "allocate_full_text_review_across_candidate_themes_only",
+    "purpose": "allocate_full_text_review_across_established_themes_only",
     "composite_weight_status": "not_frozen",
     "dimensions": [
       "question_relevance",
@@ -101,7 +116,7 @@ mentor_decision_status: "not_requested"
     "items": []
   },
   "document_level_priority": {
-    "purpose": "rank_documents_within_a_candidate_theme_for_full_text_review_only",
+    "purpose": "rank_documents_within_an_established_theme_for_full_text_review_only",
     "composite_weight_status": "not_frozen",
     "dimensions": [
       "question_directness",
@@ -119,7 +134,7 @@ mentor_decision_status: "not_requested"
     "included_claim_ids": [],
     "context_only_claim_ids": [],
     "excluded_claim_ids": [],
-    "theme_dossier_refs": []
+    "established_theme_dossier_refs": []
   },
   "feedback_loops": [],
   "recalculation": {
@@ -139,6 +154,8 @@ mentor_decision_status: "not_requested"
 }
 ~~~
 
+`theme_screening_gate.decision_links`只保存导航字段：`decision_ref`、`preliminary_theme_refs`、`source_file_refs`、`decision`及产生的既定主题引用；完整理由、决定者和日期只写在初步主题文件中。`established_themes`只保存`established_theme_ref`、`source_preliminary_theme_refs`、`screening_decision_ref`和`theme_file_ref`，避免在运行账重复保存主题正文和边界。
+
 ## 当前运行说明
 
 - 当前完成到哪一步：
@@ -147,9 +164,15 @@ mentor_decision_status: "not_requested"
 - 当前决定性缺口：
 - 下一步及停止条件：
 
-## 候选方向与关键全文队列
+## 初步主题人工筛选
 
-| 候选方向 | 人工边界 | 主题层优先理由 | 全文名额 | 关键全文 | 入选理由 | 当前状态 |
+| 初步主题 | 形成依据 | 人工判断 | 决定 | 理由 | 产生的既定主题 | 决定者与日期 |
+| --- | --- | --- | --- | --- | --- | --- |
+| | | | | | | |
+
+## 既定主题与关键全文队列
+
+| 既定主题 | 核心问题与边界 | 主题层优先理由 | 全文名额 | 关键全文 | 入选理由 | 当前状态 |
 | --- | --- | --- | ---: | --- | --- | --- |
 | | | | | | | |
 

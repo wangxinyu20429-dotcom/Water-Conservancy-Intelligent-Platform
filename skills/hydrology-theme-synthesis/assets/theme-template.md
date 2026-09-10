@@ -1,10 +1,11 @@
 ---
-theme_schema: "hydrology-theme-v1.2"
+theme_schema: "hydrology-theme-v1.3"
 theme_ref: "{{THEME_REF}}"
 formal_theme_id: ""
-theme_version: "1.2.0"
+theme_version: "1.3.0"
 title: "{{TITLE}}"
-lifecycle_state: "candidate_dossier"
+theme_stage: "established"
+lifecycle_state: "established_developing"
 workflow_status: "draft"
 as_of_date: "{{AS_OF_DATE}}"
 intended_use: "{{INTENDED_USE}}"
@@ -13,7 +14,10 @@ research_question_ids: []
 project_ids: []
 discovery_route: "{{DISCOVERY_ROUTE}}"
 workflow_run_refs: {{WORKFLOW_RUN_REFS}}
-candidate_direction_refs: {{CANDIDATE_DIRECTION_REFS}}
+preliminary_theme_refs: {{PRELIMINARY_THEME_REFS}}
+preliminary_theme_snapshot_hash: "{{PRELIMINARY_THEME_SNAPSHOT_HASH}}"
+human_screening_decision_ref: "{{HUMAN_SCREENING_DECISION_REF}}"
+human_screening_status: "approved"
 input_card_ids: {{INPUT_CARD_IDS}}
 included_claim_ids: {{INCLUDED_CLAIM_IDS}}
 context_only_claim_ids: {{CONTEXT_ONLY_CLAIM_IDS}}
@@ -22,7 +26,7 @@ independence_group_ids: {{INDEPENDENCE_GROUP_IDS}}
 version_family_ids: {{VERSION_FAMILY_IDS}}
 source_snapshot_hash: "{{SOURCE_SNAPSHOT_HASH}}"
 generated_by: "hydrology-theme-synthesis"
-generator_version: "1.2.0"
+generator_version: "1.3.0"
 narrative_depth: "deep"
 narrative_status: "in_progress"
 minimum_visible_scientific_chars: 10000
@@ -42,7 +46,7 @@ next_review_trigger: ""
 
 # {{TITLE}}
 
-> 这是由证据卡生成的主题档案。草稿只表示已建立可审计结构，不代表主题已正式建立、证据已人工确认、研究空白成立或导师已批准。所有事实回到原证据卡的 Claim 与定位；原卡仍是来源事实的唯一正文。
+> 这是通过人工筛选门后建立的既定主题档案。`established`表示课题组已决定围绕该问题继续组织证据，并不表示每条结论已经成立。主题的事实必须回到原证据卡的Claim与定位；深度正文、反馈和生命周期变化都在同一既定主题中继续积累，不再生成第三类平行主题。
 
 <!-- SCIENTIFIC_NARRATIVE_START -->
 
@@ -76,6 +80,8 @@ next_review_trigger: ""
 
 | 要回答的事 | 当前内容 |
 | --- | --- |
+| 来源初步主题 | {{PRELIMINARY_THEME_REFS}} |
+| 人工筛选决定 | {{HUMAN_SCREENING_DECISION_REF}} |
 | 主题一句话论证 | |
 | 为什么值得独立讨论 | |
 | 当前最稳的认识 | |
@@ -139,7 +145,7 @@ next_review_trigger: ""
     "closest_theme_refs": [],
     "overlap": "",
     "difference": "",
-    "recommended_destination": "candidate_dossier"
+    "recommended_destination": "established_developing"
   },
   "not_a_filter_dimension_because": "",
   "included_scope": {
@@ -323,7 +329,7 @@ next_review_trigger: ""
 
 ## 5. 证据卡形成后的关键文献补核排序
 
-这里分开记录科学作用与证据卡形成后的补核／跟踪优先级。候选方向之间的主题层排序和全文阅读前的文献层排序记录在工作流运行账中。前沿关注分不包含主题增长率或引用信号，也不改变Claim可信度。
+这里分开记录科学作用与证据卡形成后的补核／跟踪优先级。既定主题之间的主题层排序和全文阅读前的文献层排序记录在工作流运行账中。前沿关注分不包含主题增长率或引用信号，也不改变Claim可信度。
 
 ~~~literature-priority-json
 {
@@ -586,7 +592,7 @@ next_review_trigger: ""
 
 ### 8.2 本轮导师决定
 
-- 决定：待审／并入已有／保持候选／建立观察／激活／退回修改／停止
+- 决定：待审／继续深化／并入已有／拆分重审／建立观察／激活／退回修改／停止
 - 决定依据：
 - 允许应用的范围：
 - 不允许应用的范围：

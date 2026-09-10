@@ -7,7 +7,7 @@
 仓库包含可安装的 [`hydrology-evidence-cards`](skills/hydrology-evidence-cards/SKILL.md) Skill。它从本机 Zotero 只读取得指定来源和可用全文，按 Source—Claim—Decision 三层建立证据：来源版本只登记一次，Cxx 声明带全局 ID 和原文定位，平台判断写入第九张决策卡。V1.7要求沿文献自己的科学逻辑写清研究对象、真实数据、分析单位、方法转换、比较与验证、关键结果、科学贡献和结论边界；读取完整或部分主文的实质证据卡，L1可见科学正文不得少于5,000个非空白字符，L2/L3不得少于6,000字符。折叠校勘、机器字段、题录和链接不计入。模板只负责检查遗漏，不能替作者生成固定话术。R09还会拦截重复段落、空标题和通用填充语。普通文献卡不设置“复现需要什么”栏目，数据或代码可用性只在影响证据强度时说明。详细合同见[human-readable-core.md](skills/hydrology-evidence-cards/references/human-readable-core.md)，原V1.2架构说明仍见[证据卡科学架构与 Zotero Skill 使用 V1.2](docs/证据卡规范/07_证据卡科学架构与Zotero_Skill使用_V1.2.md)。
 ## 证据卡到主题 Skill
 
-[`hydrology-theme-synthesis`](skills/hydrology-theme-synthesis/SKILL.md) V1.3按“研究问题—路线选择—初步主题—人工筛选—既定主题—关键全文—证据卡—Claim准入—万字深化—三类反馈—重算—导师决定”运行。初步主题只用于筛选，允许重叠和不稳定；只有记录人工建立、改名后建立或合并决定的既定主题才能进入全文证据链。主题增长率只在既定主题之间分配阅读资源；年份、标准化引用和经核期刊信号只用于主题内文献排序。入口见[完整工作流讨论稿](docs/主题规范/03_AI辅助水利文献发现到深度主题形成工作流_讨论稿.md)，[初步主题模板](skills/hydrology-theme-synthesis/assets/preliminary-theme-template.md)、[人工决策门](skills/hydrology-theme-synthesis/references/human-decision-gates.md)、[运行账模板](skills/hydrology-theme-synthesis/assets/workflow-run-template.md)和[既定主题模板](skills/hydrology-theme-synthesis/assets/theme-template.md)。
+[`hydrology-theme-synthesis`](skills/hydrology-theme-synthesis/SKILL.md) V1.3按“研究问题—路线选择—初步主题—人工筛选—既定主题—关键全文—证据卡—Claim准入—万字深化—三类反馈—重算—导师决定”运行。初步主题只用于筛选，允许重叠和不稳定；只有记录人工建立、改名后建立或合并决定的既定主题才能进入全文证据链。主题增长率只在既定主题之间分配阅读资源；年份、标准化引用和经核期刊信号只用于主题内文献排序。入口见[完整工作流讨论稿](docs/主题规范/03_AI辅助水利文献发现到深度主题形成工作流_讨论稿.md)和公开的[主题模板使用说明](docs/主题模板/00_主题模板使用说明_V1.3.md)，其中分别提供[初步主题与人工筛选模板](docs/主题模板/01_初步主题与人工筛选模板_V1.3.md)、[既定主题深度综合模板](docs/主题模板/02_既定主题深度综合模板_V1.3.md)和[主题工作流运行账模板](docs/主题模板/03_主题工作流运行账模板_V1.3.md)。Skill内仍保留机器生成所用的对应骨架。
 
 ## 科研平台集合真实运行成果
 
@@ -40,10 +40,10 @@ GitHub不保存项目原始数据、文献全文、Zotero数据库、凭据或�
 ## 文档结构
 
 - [产品与流程](docs/产品与流程)：产品说明、操作手册、入口记录、填写模板、任务顺序和验收。
-- [证据卡模板](docs/证据卡模板)：公共骨架、八类独立来源入口和第九张平台综合决策卡；Skill 装配后每个来源仍输出一个独立 Markdown。
+- [证据卡模板](docs/证据卡模板)：V1.7公共骨架、八类独立来源入口和第九张平台综合决策卡；Skill装配后每个来源仍输出一个独立Markdown。
 - [证据卡模块](docs/证据卡模块)：公共水利情境及预测、模拟、频率气候、监测遥感、工程安全方法模块。
 - [证据卡规范](docs/证据卡规范)：V1.2 科学架构、外部实践对照、原文忠实性和质量检查。
-- [主题模板](docs/主题模板)：一份主题档案的完整事实源模板。
+- [主题模板](docs/主题模板)：初步主题人工筛选、既定主题万字深度综合和工作流运行账三类公开模板。
 - [主题规范](docs/主题规范)：外部实践对照、十二步生成、文献排序和原卡反馈闭环。
 - [可安装 Skills](skills)：供其他成员复制接入的可执行科研工作流。
 - [证据卡](证据卡)：单篇来源证据卡和批次索引。
@@ -59,7 +59,7 @@ GitHub不保存项目原始数据、文献全文、Zotero数据库、凭据或�
 | [T01](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/1) | 建立OneDrive目录并确认Zotero、Obsidian与GitHub入口 | M0 |
 | [T02](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/2) | 把一份真实材料收进Zotero并登记文献链接 | M0 |
 | [T03](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/3) | 为唯一来源版本建立真实 L0—L3 卡、Cxx 定位、人审和 R01—R09 结果 | M1 |
-| [T04](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/4) | 用主题Skill完成Claim准入、比较框架、发展脉络、研究现状和关键文献排序 | M1 |
+| [T04](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/4) | 形成初步主题并人工筛选，通过后建立既定主题、完成Claim准入和万字综合 | M1 |
 | [T05](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/5) | 用主题反推原卡承重缺口，按三门触发最小补核并重算主题 | M1 |
 | [T06](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/6) | 从已核主题声明生成机会信号和写作接口，不自动宣称新颖性 | M1 |
 | [T07](https://github.com/wangxinyu20429-dotcom/Water-Conservancy-Intelligent-Platform/issues/7) | 将Obsidian知识文件同步到集体GitHub并检查链接 | M1 |

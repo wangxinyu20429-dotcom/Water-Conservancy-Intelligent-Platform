@@ -1,8 +1,8 @@
 ---
-theme_schema: "hydrology-theme-v1.0"
+theme_schema: "hydrology-theme-v1.2"
 theme_ref: "{{THEME_REF}}"
 formal_theme_id: ""
-theme_version: "1.0.0"
+theme_version: "1.2.0"
 title: "{{TITLE}}"
 lifecycle_state: "candidate_dossier"
 workflow_status: "draft"
@@ -11,6 +11,9 @@ intended_use: "{{INTENDED_USE}}"
 research_direction_ids: []
 research_question_ids: []
 project_ids: []
+discovery_route: "{{DISCOVERY_ROUTE}}"
+workflow_run_refs: {{WORKFLOW_RUN_REFS}}
+candidate_direction_refs: {{CANDIDATE_DIRECTION_REFS}}
 input_card_ids: {{INPUT_CARD_IDS}}
 included_claim_ids: {{INCLUDED_CLAIM_IDS}}
 context_only_claim_ids: {{CONTEXT_ONLY_CLAIM_IDS}}
@@ -19,7 +22,10 @@ independence_group_ids: {{INDEPENDENCE_GROUP_IDS}}
 version_family_ids: {{VERSION_FAMILY_IDS}}
 source_snapshot_hash: "{{SOURCE_SNAPSHOT_HASH}}"
 generated_by: "hydrology-theme-synthesis"
-generator_version: "1.0.0"
+generator_version: "1.2.0"
+narrative_depth: "deep"
+narrative_status: "in_progress"
+minimum_visible_scientific_chars: 10000
 human_review_status: "not_started"
 human_reviewer: ""
 human_reviewed_at: ""
@@ -37,6 +43,34 @@ next_review_trigger: ""
 # {{TITLE}}
 
 > 这是由证据卡生成的主题档案。草稿只表示已建立可审计结构，不代表主题已正式建立、证据已人工确认、研究空白成立或导师已批准。所有事实回到原证据卡的 Claim 与定位；原卡仍是来源事实的唯一正文。
+
+<!-- SCIENTIFIC_NARRATIVE_START -->
+
+## A. 主题深度综合正文
+
+> 完成正文后才把 `narrative_status` 改为 `ready_for_handoff`。可见科学正文至少10,000字符；材料不足时保持 `in_progress` 并写明 `BLOCKED_SOURCE_LIMIT`，不得填充套话。
+
+### A.1 研究对象、核心矛盾与问题链
+
+### A.2 概念边界和相邻主题关系
+
+### A.3 当前证据构成与来源角色
+
+### A.4 数据、观测、分析单位与尺度
+
+### A.5 方法谱系、输入输出与关键假设
+
+### A.6 主要结果、知识状态与适用边界
+
+### A.7 发展脉络、异质性与负结果
+
+### A.8 独立综合见解及其反证条件
+
+### A.9 研究缺口与可检验问题
+
+### A.10 反向补核、写作和Idea接口
+
+<!-- SCIENTIFIC_NARRATIVE_END -->
 
 ## 0. 导师快速判断页
 
@@ -287,9 +321,9 @@ next_review_trigger: ""
 - 同源数据、项目、模型或版本是否重复：
 - 承重冲突是否阻断当前判断：
 
-## 5. 关键文献与前沿关注排序
+## 5. 证据卡形成后的关键文献补核排序
 
-这里分开记录科学作用与阅读优先级。前沿关注分不改变Claim可信度。
+这里分开记录科学作用与证据卡形成后的补核／跟踪优先级。候选方向之间的主题层排序和全文阅读前的文献层排序记录在工作流运行账中。前沿关注分不包含主题增长率或引用信号，也不改变Claim可信度。
 
 ~~~literature-priority-json
 {
@@ -372,7 +406,7 @@ next_review_trigger: ""
 - 标准、政府报告、工程记录、数据集和软件：
 - 为什么它们不应因年份或无JIF被排除：
 
-## 6. 主题反推的证据卡补核与修整
+## 6. 主题反推的三类反馈与修整
 
 ~~~evidence-feedback-json
 {
@@ -389,6 +423,7 @@ next_review_trigger: ""
 ~~~json
 {
   "request_id": "EFR-01",
+  "feedback_type": "source_recheck",
   "source_card_id": "",
   "source_card_path": "",
   "affected_claim_ids": [],
@@ -409,10 +444,15 @@ next_review_trigger: ""
     "expected_locator": ""
   },
   "allowed_action": "targeted_recheck",
+  "retrieval_or_scope_ref": "",
+  "affected_stage": "",
+  "configuration_ref": "",
+  "validation_sample_ref": "",
   "expected_theme_change": "",
   "stop_condition": "",
   "status": "proposed",
   "source_check_result": "",
+  "application_result": "",
   "changed_claim_ids": [],
   "card_revision_before": "",
   "card_revision_after": "",
@@ -423,9 +463,9 @@ next_review_trigger: ""
 
 ### 6.1 本轮反馈队列
 
-| 优先级 | request_id | 原卡／Claim | 为什么影响主题 | 最小补核材料 | 可能改变什么 | 停止条件 | 状态 |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| | | | | | | | |
+| 优先级 | request_id | 反馈类型 | 反馈目标 | 为什么影响主题 | 最小材料／修改 | 可能改变什么 | 停止条件 | 状态 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| | | | | | | | | |
 
 ### 6.2 补核后主题重算
 
@@ -536,9 +576,12 @@ next_review_trigger: ""
 - [ ] 真冲突的比较框架一致
 - [ ] 同源数据、项目、模型和版本未重复计数
 - [ ] 期刊指标年份、学科、百分位／分区和来源已核
+- [ ] 主题增长率只用于主题层资源分配，未复制为单篇论文质量
+- [ ] 引用指标已按学科和发表年份归一化，原始被引量未直接跨文献比较
 - [ ] 新论文和高期刊指标只改变关注顺序
 - [ ] 旧奠基、长序列和非期刊关键来源未被错误排除
 - [ ] 补核结果写回原卡并保留版本历史
+- [ ] 语料补充和发现模型纠偏已重跑对应上游阶段
 - [ ] Idea与写作部分没有虚构新颖性或共识
 
 ### 8.2 本轮导师决定

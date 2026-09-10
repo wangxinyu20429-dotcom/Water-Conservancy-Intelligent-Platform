@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Smoke-test admissibility, score recomputation, and metric provenance."""
+"""Smoke-test workflow routing, admissibility, score recomputation, and provenance."""
 
 from __future__ import annotations
 import json
@@ -11,6 +11,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "scripts" / "build_theme.py"
 VALIDATE = ROOT / "scripts" / "validate_theme.py"
+INIT_WORKFLOW = ROOT / "scripts" / "init_workflow_run.py"
+VALIDATE_WORKFLOW = ROOT / "scripts" / "validate_workflow_run.py"
 
 SOURCE = """---
 card_schema: "evidence-card-v1.2"
@@ -71,6 +73,19 @@ def replace_priority(theme: str, item: dict) -> str:
 def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
+        workflow = work / "workflow.md"
+        run(str(INIT_WORKFLOW), "--workflow-ref", "run:test", "--title", "测试工作流",
+            "--question", "测试问题", "--intended-use", "结构验收",
+            "--route", "large_corpus", "--output", str(workflow))
+        run(str(VALIDATE_WORKFLOW), str(workflow), "--mode", "draft")
+        broken_workflow = workflow.read_text(encoding="utf-8").replace(
+            '"purpose": "allocate_full_text_review_across_candidate_themes_only"',
+            '"purpose": "claim_credibility"',
+        )
+        workflow.write_text(broken_workflow, encoding="utf-8")
+        result = run(str(VALIDATE_WORKFLOW), str(workflow), "--mode", "draft", ok=False)
+        assert "WF06" in result.stdout
+
         source = work / "EC-TEST-001.md"
         theme = work / "theme.md"
         source.write_text(SOURCE, encoding="utf-8")
@@ -81,6 +96,15 @@ def main() -> None:
         built = theme.read_text(encoding="utf-8")
         assert 'included_claim_ids: ["EC-TEST-001-C01"]' in built
         run(str(VALIDATE), str(theme), "--mode", "draft", "--index-root", str(work))
+
+        legacy = work / "legacy-theme.md"
+        legacy_text = built.replace('theme_schema: "hydrology-theme-v1.2"', 'theme_schema: "hydrology-theme-v1.1"')
+        legacy_text = "\n".join(
+            line for line in legacy_text.splitlines()
+            if not line.startswith(("discovery_route:", "workflow_run_refs:", "candidate_direction_refs:"))
+        ) + "\n"
+        legacy.write_text(legacy_text, encoding="utf-8")
+        run(str(VALIDATE), str(legacy), "--mode", "draft", "--index-root", str(work))
 
         item = {
             "source_card_id": "EC-TEST-001",
@@ -124,7 +148,7 @@ def main() -> None:
         result = run(str(VALIDATE), str(theme), "--mode", "draft", "--index-root", str(work), ok=False)
         assert "TG05" in result.stdout
 
-    print("PASS: theme builder and validator invariants")
+    print("PASS: workflow, theme builder and validator invariants")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate hydrology theme v1.0 structure and hard rules TG01-TG10."""
+"""Validate hydrology theme v1.1/v1.2 structure, provenance, and deep narrative."""
 
 from __future__ import annotations
 
@@ -19,6 +19,7 @@ META_REQUIRED = [
     "mentor_decision_status", "lifecycle_proposal_status",
     "lifecycle_effect_status", "load_bearing_conflict",
     "unresolved_conflict_ids", "last_evidence_refresh", "next_review_trigger",
+    "narrative_depth", "narrative_status", "minimum_visible_scientific_chars",
 ]
 BLOCKS = [
     "theme-scope-json", "source-manifest-json", "theme-synthesis-json",
@@ -36,6 +37,8 @@ ACTIONS = {
     "downgrade_verification", "request_level_upgrade",
 }
 FEEDBACK_STATUS = {"proposed", "source_checked", "applied", "rejected", "blocked"}
+FEEDBACK_TYPES = {"source_recheck", "corpus_supplement", "discovery_model_correction"}
+DISCOVERY_ROUTES = {"small_sample", "large_corpus", "hybrid"}
 WEIGHTS = {
     "evidence_quality_and_independence": 25,
     "question_directness": 20,
@@ -43,6 +46,9 @@ WEIGHTS = {
     "recency": 25,
     "verified_field_normalized_journal_signal": 15,
 }
+NARRATIVE_START = "<!-- SCIENTIFIC_NARRATIVE_START -->"
+NARRATIVE_END = "<!-- SCIENTIFIC_NARRATIVE_END -->"
+NARRATIVE_STATUS = {"in_progress", "ready_for_handoff", "blocked_source_limit"}
 
 
 def parse_scalar(raw: str) -> Any:
@@ -91,6 +97,112 @@ def blank(value: Any) -> bool:
 
 def list_value(value: Any) -> list[Any]:
     return value if isinstance(value, list) else []
+
+
+def narrative_region(text: str) -> tuple[str, list[str]]:
+    errors: list[str] = []
+    if text.count(NARRATIVE_START) != 1 or text.count(NARRATIVE_END) != 1:
+        return "", ["TG11 theme requires exactly one scientific narrative marker pair"]
+    start = text.index(NARRATIVE_START) + len(NARRATIVE_START)
+    end = text.index(NARRATIVE_END)
+    if end <= start:
+        errors.append("TG11 scientific narrative markers are reversed or empty")
+        return "", errors
+    return text[start:end], errors
+
+
+def strip_markdown_for_count(region: str) -> tuple[str, list[str], list[str]]:
+    text = re.sub(r"(?is)<details\b.*?</details>", "", region)
+    text = re.sub(r"(?ms)^(```|~~~).*?^\1\s*$", "", text)
+    text = re.sub(r"(?s)<!--.*?-->", "", text)
+    clean_lines: list[str] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or re.match(r"^#{1,6}\s", line) or line.startswith("|"):
+            clean_lines.append("")
+            continue
+        line = re.sub(r"^>\s*", "", line)
+        line = re.sub(r"^(?:[-*+] |\d+[.)]\s+)", "", line)
+        line = re.sub(r"\[\[([^\]|]+)\|([^\]]+)\]\]", r"\2", line)
+        line = re.sub(r"\[\[([^\]]+)\]\]", r"\1", line)
+        line = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", line)
+        line = re.sub(r"https?://\S+", "", line)
+        line = re.sub(r"[`*_~]", "", line)
+        clean_lines.append(line)
+    joined = "\n".join(clean_lines)
+    paragraphs = [re.sub(r"\s+", " ", p).strip() for p in re.split(r"\n\s*\n", joined) if p.strip()]
+    sentences = [s.strip() for s in re.split(r"[。！？!?]+", " ".join(paragraphs)) if s.strip()]
+    return "\n\n".join(paragraphs), paragraphs, sentences
+
+
+def normalize_prose(value: str) -> str:
+    value = re.sub(r"EC-\d{8}-\d{3}(?:-C\d+)?", "EC", value, flags=re.I)
+    value = re.sub(r"\d+(?:\.\d+)?", "N", value)
+    value = re.sub(r"[\W_]+", "", value, flags=re.UNICODE)
+    return value.lower()
+
+
+def narrative_checks(text: str, meta: dict[str, Any]) -> tuple[list[str], list[str], int]:
+    errors: list[str] = []
+    warnings: list[str] = []
+    region, marker_errors = narrative_region(text)
+    errors.extend(marker_errors)
+    if marker_errors:
+        return errors, warnings, 0
+    clean, paragraphs, sentences = strip_markdown_for_count(region)
+    char_count = len(re.sub(r"\s+", "", clean))
+    status = meta.get("narrative_status")
+    if meta.get("narrative_depth") != "deep":
+        errors.append("TG11 narrative_depth must be deep")
+    if status not in NARRATIVE_STATUS:
+        errors.append("TG11 invalid narrative_status")
+    try:
+        minimum = int(meta.get("minimum_visible_scientific_chars"))
+    except (TypeError, ValueError):
+        minimum = 0
+        errors.append("TG11 minimum_visible_scientific_chars must be numeric")
+    if minimum < 10000:
+        errors.append("TG11 deep theme minimum must be at least 10000 visible scientific characters")
+
+    headings = re.findall(r"(?m)^###\s+.+$", region)
+    source_ids = set(re.findall(r"EC-\d{8}-\d{3}", region))
+    long_paragraphs = [p for p in paragraphs if len(re.sub(r"\s+", "", p)) >= 120]
+    cited_long = [p for p in long_paragraphs if re.search(r"EC-\d{8}-\d{3}", p)]
+
+    if status == "ready_for_handoff":
+        if char_count < minimum:
+            errors.append(f"TG11 visible scientific narrative is {char_count} chars; requires {minimum}")
+        if len(headings) < 8:
+            errors.append("TG11 ready deep narrative requires at least eight substantive subsections")
+        expected_sources = min(5, len(list_value(meta.get("input_card_ids"))))
+        if len(source_ids) < expected_sources:
+            errors.append(f"TG12 narrative cites only {len(source_ids)} distinct evidence cards; requires {expected_sources}")
+        if len(long_paragraphs) < 20:
+            errors.append("TG11 ready deep narrative requires at least twenty substantive prose paragraphs")
+        elif len(cited_long) / len(long_paragraphs) < 0.6:
+            errors.append("TG12 fewer than 60% of substantive paragraphs carry evidence-card provenance")
+    else:
+        warnings.append(f"TG11 narrative is {status}; visible scientific chars={char_count}")
+
+    seen_paragraphs: dict[str, int] = {}
+    for idx, paragraph in enumerate(long_paragraphs, 1):
+        token = normalize_prose(paragraph)
+        if len(token) < 80:
+            continue
+        if token in seen_paragraphs:
+            errors.append(f"TG13 repeated substantive paragraph {seen_paragraphs[token]} and {idx}")
+        else:
+            seen_paragraphs[token] = idx
+    seen_sentences: set[str] = set()
+    for sentence in sentences:
+        token = normalize_prose(sentence)
+        if len(token) < 80:
+            continue
+        if token in seen_sentences:
+            errors.append("TG13 repeated long sentence in scientific narrative")
+            break
+        seen_sentences.add(token)
+    return errors, warnings, char_count
 
 
 def get_blocks(text: str) -> tuple[dict[str, dict[str, Any]], list[str]]:
@@ -186,15 +298,24 @@ def score_bounds(components: dict[str, Any], na: set[str], unknown: set[str]) ->
     )
 
 
-def validate(meta: dict[str, Any], blocks: dict[str, dict[str, Any]], final: bool, known: dict[str, dict[str, Any]] | None) -> tuple[list[str], list[str]]:
+def validate(meta: dict[str, Any], blocks: dict[str, dict[str, Any]], final: bool, known: dict[str, dict[str, Any]] | None, text: str) -> tuple[list[str], list[str], int]:
     errors: list[str] = []
     warnings: list[str] = []
 
     for key in META_REQUIRED:
         if key not in meta:
             errors.append(f"TG00 missing frontmatter field: {key}")
-    if meta.get("theme_schema") != "hydrology-theme-v1.0":
-        errors.append("TG00 theme_schema must be hydrology-theme-v1.0")
+    schema = meta.get("theme_schema")
+    if schema not in {"hydrology-theme-v1.1", "hydrology-theme-v1.2"}:
+        errors.append("TG00 theme_schema must be hydrology-theme-v1.1 or hydrology-theme-v1.2")
+    if schema == "hydrology-theme-v1.2":
+        for key in ("discovery_route", "workflow_run_refs", "candidate_direction_refs"):
+            if key not in meta:
+                errors.append(f"TG00 v1.2 theme missing frontmatter field: {key}")
+        if meta.get("discovery_route") not in DISCOVERY_ROUTES:
+            errors.append("TG00 v1.2 theme requires small_sample, large_corpus or hybrid discovery_route")
+        if final and not list_value(meta.get("workflow_run_refs")):
+            errors.append("TG00 v1.2 final theme requires a workflow_run_ref")
     if meta.get("lifecycle_state") not in LIFECYCLE:
         errors.append("TG09 invalid lifecycle_state")
     if meta.get("workflow_status") not in WORKFLOW:
@@ -387,23 +508,40 @@ def validate(meta: dict[str, Any], blocks: dict[str, dict[str, Any]], final: boo
             errors.append("TG07 feedback request must be an object")
             continue
         rid = str(req.get("request_id") or "<unknown>")
-        if req.get("allowed_action") not in ACTIONS or req.get("problem_type") not in ACTIONS:
-            errors.append(f"TG07 {rid} uses an unsupported feedback action")
+        feedback_type = req.get("feedback_type") or "source_recheck"
+        if feedback_type not in FEEDBACK_TYPES:
+            errors.append(f"TG07 {rid} uses an unsupported feedback type")
+            continue
         if req.get("status") not in FEEDBACK_STATUS:
             errors.append(f"TG07 {rid} invalid status")
-        if not req.get("source_card_id") or not req.get("source_card_path") or not list_value(req.get("affected_claim_ids")):
-            errors.append(f"TG07 {rid} must point to original card and Claim IDs")
         gates = req.get("three_gate_check")
         if not isinstance(gates, dict) or set(gates) != {"decision_exists", "gap_is_locatable", "new_material_may_change_judgment"}:
             errors.append(f"TG07 {rid} requires exact three-gate check")
         if req.get("status") in {"source_checked", "applied"} and (not isinstance(gates, dict) or not all(gates.values())):
             errors.append(f"TG07 {rid} cannot advance without all three gates")
-        if req.get("status") == "applied":
-            for key in ("source_check_result", "card_revision_before", "card_revision_after", "evidence_card_validation", "theme_recalculation"):
+        if feedback_type == "source_recheck":
+            if req.get("allowed_action") not in ACTIONS or req.get("problem_type") not in ACTIONS:
+                errors.append(f"TG07 {rid} uses an unsupported source-recheck action")
+            if not req.get("source_card_id") or not req.get("source_card_path") or not list_value(req.get("affected_claim_ids")):
+                errors.append(f"TG07 {rid} source_recheck must point to original card and Claim IDs")
+        elif feedback_type == "corpus_supplement":
+            if blank(req.get("retrieval_or_scope_ref")):
+                errors.append(f"TG07 {rid} corpus_supplement requires retrieval_or_scope_ref")
+        elif feedback_type == "discovery_model_correction":
+            for key in ("affected_stage", "configuration_ref", "validation_sample_ref"):
                 if blank(req.get(key)):
-                    errors.append(f"TG08 {rid} applied feedback missing {key}")
-            if not list_value(req.get("changed_claim_ids")):
-                errors.append(f"TG08 {rid} applied feedback requires changed_claim_ids")
+                    errors.append(f"TG07 {rid} discovery_model_correction missing {key}")
+        if req.get("status") == "applied":
+            if feedback_type == "source_recheck":
+                for key in ("source_check_result", "card_revision_before", "card_revision_after", "evidence_card_validation", "theme_recalculation"):
+                    if blank(req.get(key)):
+                        errors.append(f"TG08 {rid} applied source feedback missing {key}")
+                if not list_value(req.get("changed_claim_ids")):
+                    errors.append(f"TG08 {rid} applied source feedback requires changed_claim_ids")
+            else:
+                for key in ("application_result", "theme_recalculation"):
+                    if blank(req.get(key)):
+                        errors.append(f"TG08 {rid} applied {feedback_type} missing {key}")
         if final:
             for key in ("problem", "theme_consequence", "pre_check_judgment", "decisive_gap", "expected_theme_change", "stop_condition"):
                 if blank(req.get(key)):
@@ -457,7 +595,13 @@ def validate(meta: dict[str, Any], blocks: dict[str, dict[str, Any]], final: boo
         if not meta_included:
             warnings.append("TG01 draft has no included Claim; select admissible Claims before synthesis")
 
-    return errors, warnings
+    narrative_errors, narrative_warnings, narrative_chars = narrative_checks(text, meta)
+    errors.extend(narrative_errors)
+    warnings.extend(narrative_warnings)
+    if final and meta.get("narrative_status") != "ready_for_handoff":
+        errors.append("TG11 final theme requires narrative_status ready_for_handoff")
+
+    return errors, warnings, narrative_chars
 
 
 def main() -> None:
@@ -475,19 +619,20 @@ def main() -> None:
     index_errors: list[str] = []
     if args.index_root:
         known, index_errors = collect_claim_index(Path(args.index_root))
-    errors, warnings = validate(meta, blocks, args.mode == "final", known)
+    errors, warnings, narrative_chars = validate(meta, blocks, args.mode == "final", known, text)
     errors = block_errors + index_errors + errors
 
     print(f"theme: {path}")
     print(f"ref: {meta.get('theme_ref')}")
     print(f"state: {meta.get('lifecycle_state')}")
+    print(f"visible_scientific_chars: {narrative_chars}")
     for item in warnings:
         print(f"WARNING: {item}")
     for item in errors:
         print(f"ERROR: {item}")
     if errors:
         raise SystemExit(1)
-    print("PASS: TG01-TG10 structural checks completed; scientific validity still requires source and expert review")
+    print("PASS: TG01-TG13 structural, provenance, and visible-depth checks completed; scientific validity still requires source and expert review")
 
 
 if __name__ == "__main__":

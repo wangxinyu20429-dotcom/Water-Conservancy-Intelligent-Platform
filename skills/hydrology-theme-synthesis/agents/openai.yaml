@@ -1,7 +1,7 @@
 interface:
-  display_name: "水利科研主题综合"
-  short_description: "由证据卡生成主题、关键文献排序与原卡补核闭环"
+  display_name: "水利文献发现与主题综合"
+  short_description: "双路线发现方向、筛选全文、形成深度主题并反馈重算"
   brand_color: "#176B87"
-  default_prompt: "Use $hydrology-theme-synthesis to synthesize selected evidence cards into a source-traceable hydrology theme, rank frontier-reading priorities, and create targeted feedback requests for the original cards."
+  default_prompt: "Use $hydrology-theme-synthesis to choose a small-sample or large-corpus route, discover and review candidate hydrology directions, select key full texts, synthesize source-checked evidence cards into a deep theme, and run source, corpus, or discovery-model feedback loops."
 policy:
   allow_implicit_invocation: true

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a traceable hydrology theme draft from evidence-card v1.2 files."""
+"""Build a traceable hydrology theme v1.2 draft from evidence-card files."""
 
 from __future__ import annotations
 
@@ -123,6 +123,9 @@ def main() -> None:
     parser.add_argument("--question", default="")
     parser.add_argument("--intended-use", default="")
     parser.add_argument("--as-of-date", default=str(date.today()))
+    parser.add_argument("--discovery-route", choices=("small_sample", "large_corpus", "hybrid"), default="small_sample")
+    parser.add_argument("--workflow-run-ref", action="append", default=[])
+    parser.add_argument("--candidate-direction-ref", action="append", default=[])
     parser.add_argument("--card", action="append", default=[])
     parser.add_argument("--cards-dir", action="append", default=[])
     parser.add_argument("--claim", action="append", default=[], help="Claim explicitly selected after scientific review")
@@ -248,6 +251,9 @@ def main() -> None:
         "INTENDED_USE": args.intended_use,
         "AS_OF_DATE": args.as_of_date,
         "AS_OF_YEAR": args.as_of_date[:4],
+        "DISCOVERY_ROUTE": args.discovery_route,
+        "WORKFLOW_RUN_REFS": dump_compact(args.workflow_run_ref),
+        "CANDIDATE_DIRECTION_REFS": dump_compact(args.candidate_direction_ref),
         "INPUT_CARD_IDS": dump_compact(sorted(set(card_ids))),
         "INCLUDED_CLAIM_IDS": dump_compact([x["claim_id"] for x in included]),
         "CONTEXT_ONLY_CLAIM_IDS": dump_compact([x["claim_id"] for x in context_only]),

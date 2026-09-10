@@ -2,7 +2,16 @@
 
 ## 输入
 
-记录主题问题、intended_use、目标水利情境、证据卡路径和版本、已有主题及修订、Decision卡、复核者、Zotero可读范围、期刊指标来源。没有实际证据卡时只能输出空白模板或结构建议，不能生成事实主题。
+记录研究问题、intended_use、目标水利情境、处理路线、语料或Zotero范围、检索与配置引用、证据卡路径和版本、已有主题及修订、Decision卡、复核者、期刊与引用指标来源。没有实际证据卡时可以生成候选方向和关键全文队列，但不能生成事实主题或承重Claim。
+
+## 创建工作流运行账
+
+~~~text
+python scripts/init_workflow_run.py --workflow-ref run:regionalization --title "无资料流域文献发现到主题形成" --question "哪些证据能够解释空间独立测试下的泛化差异？" --intended-use "候选方向发现和后续主题综合" --route hybrid --output 运行记录/区域化工作流.md
+python scripts/validate_workflow_run.py 运行记录/区域化工作流.md --mode draft
+~~~
+
+运行账是路线、候选方向、两级排序、关键全文、证据卡交接、三类反馈、重算和导师决定的审计入口。它不能替代检索日志、语料、证据卡或主题档案。
 
 ## 创建草稿
 
@@ -47,6 +56,11 @@ python scripts/build_theme.py --theme-ref draft:regionalization --title "无资�
 
 | 情况 | 处理 |
 | --- | --- |
+| 小样本没有足够年度切片 | 主题增长率not_applicable，不运行伪DTM |
+| 大语料没有检索与去重日志 | 停在语料登记，不输出趋势 |
+| 主题模型不稳定 | 降级为探索性候选簇，不能生成正式方向结论 |
+| 只有原始引用数 | citation_signal=unknown，不跨年份学科比较 |
+| 候选发现权重未冻结 | 记录分项与理由，不输出综合总分 |
 | 无Claim JSON | 输入受阻，不从散文猜声明 |
 | L0/L1或未核 | 仅搜索线索/context_only |
 | 指标缺失 | unknown并报告区间 |
@@ -64,4 +78,6 @@ python scripts/build_theme.py --theme-ref draft:regionalization --title "无资�
 
 `validate_theme.py --mode draft`检查结构、引用和指标使用；`--mode final`检查承重完整性，并可用 `--index-root` 验证 Claim 的L2/L3与source-checked状态。
 
-验证器不能判断原文理解、方法质量、主题价值、空白真实性或导师批准，必须由原文复核、领域判断、必要检索和授权决定。
+`validate_workflow_run.py --mode draft`检查路线、主题层与文献层用途、趋势字段和反馈目标；`--mode final`还要求边界、人工候选方向审查和导师决定闭环。
+
+验证器不能判断检索覆盖、主题模型科学有效性、原文理解、方法质量、主题价值、空白真实性或导师批准，必须由语料审查、原文复核、领域判断、必要检索和授权决定。

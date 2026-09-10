@@ -7,7 +7,7 @@
 仓库包含可安装的 [`hydrology-evidence-cards`](skills/hydrology-evidence-cards/SKILL.md) Skill。它从本机 Zotero 只读取得指定来源和可用全文，按 Source—Claim—Decision 三层建立证据：来源版本只登记一次，Cxx 声明带全局 ID 和原文定位，平台判断写入第九张决策卡。V1.7要求沿文献自己的科学逻辑写清研究对象、真实数据、分析单位、方法转换、比较与验证、关键结果、科学贡献和结论边界；读取完整或部分主文的实质证据卡，L1可见科学正文不得少于5,000个非空白字符，L2/L3不得少于6,000字符。折叠校勘、机器字段、题录和链接不计入。模板只负责检查遗漏，不能替作者生成固定话术。R09还会拦截重复段落、空标题和通用填充语。普通文献卡不设置“复现需要什么”栏目，数据或代码可用性只在影响证据强度时说明。详细合同见[human-readable-core.md](skills/hydrology-evidence-cards/references/human-readable-core.md)，原V1.2架构说明仍见[证据卡科学架构与 Zotero Skill 使用 V1.2](docs/证据卡规范/07_证据卡科学架构与Zotero_Skill使用_V1.2.md)。
 ## 证据卡到主题 Skill
 
-[`hydrology-theme-synthesis`](skills/hydrology-theme-synthesis/SKILL.md) 把选定证据卡中的 L2/L3、已核 Claim 组织成主题问题、边界、比较框架、发展脉络和研究现状；再分开判断来源的科学作用与前沿关注优先级，并把承重缺口反馈到原证据卡补核。新近性占25%、经核的学科归一期刊信号占15%，两项只影响“先读、先核、先跟踪”的顺序，不改变 Claim 可信度。入口见[十二步闭环工作流](docs/主题规范/02_证据卡到主题闭环工作流_V1.0.md)，成品结构见[水利科研主题模板](docs/主题模板/01_水利科研主题模板_V1.0.md)。
+[`hydrology-theme-synthesis`](skills/hydrology-theme-synthesis/SKILL.md) V1.2按“研究问题—路线选择—候选方向—关键全文—证据卡—Claim准入—万字主题—三类反馈—重算—导师决定”运行。小样本路线直接核对Zotero和全文；大语料路线融合LLM实体抽取、规则识别、DTM及Theil–Sen／Mann–Kendall趋势分析，再经人工审查进入全文队列。主题增长率只在主题层分配阅读资源；年份、标准化引用和经核期刊信号只用于文献层排序。证据卡形成后的E25/D20/G15/R25/V15前沿关注分仍只决定先补核和先跟踪谁，不改变Claim可信度。入口见[完整工作流讨论稿](docs/主题规范/03_AI辅助水利文献发现到深度主题形成工作流_讨论稿.md)，运行账模板见[workflow-run-template.md](skills/hydrology-theme-synthesis/assets/workflow-run-template.md)，主题档案模板见[theme-template.md](skills/hydrology-theme-synthesis/assets/theme-template.md)。
 
 ## 科研平台集合真实运行成果
 
